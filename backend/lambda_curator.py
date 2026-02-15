@@ -8,7 +8,7 @@ This is a wrapper around curator/freshness_check.py for AWS Lambda deployment.
 For local testing, you can invoke this directly or use the test suite.
 """
 
-from backend.curator.freshness_check import lambda_handler
+from curator.freshness_check import lambda_handler
 
 # Export the handler for Lambda
 handler = lambda_handler
