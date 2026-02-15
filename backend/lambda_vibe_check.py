@@ -28,12 +28,23 @@ from exceptions import ClewException, ValidationError
 
 logger = logging.getLogger("clew.lambda.vibe_check")
 
-# CORS headers for all responses
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-}
+# Allowed CORS origins — must match API Gateway allowedOrigins
+ALLOWED_ORIGINS = {"http://localhost:3000"}
+
+
+def _cors_headers(event: dict) -> dict:
+    """Return CORS headers with origin validated against allowlist."""
+    origin = (event.get("headers") or {}).get("origin", "")
+    # Also check Origin header with capital O (API Gateway normalizes to lowercase)
+    if not origin:
+        origin = (event.get("headers") or {}).get("Origin", "")
+    allowed = origin if origin in ALLOWED_ORIGINS or origin.endswith(".amplifyapp.com") else ""
+    return {
+        "Access-Control-Allow-Origin": allowed,
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+    }
+
 
 # Required Vibe Check fields
 REQUIRED_FIELDS = ["skepticism", "goal", "learning_style", "context"]
@@ -97,7 +108,7 @@ def lambda_handler(event, context):
         logger.info("[lambda:vibe_check] Profile generated successfully")
         return {
             "statusCode": 200,
-            "headers": CORS_HEADERS,
+            "headers": _cors_headers(event),
             "body": json.dumps({"profile": profile}),
         }
 
@@ -105,7 +116,7 @@ def lambda_handler(event, context):
         logger.warning("[lambda:vibe_check] Invalid JSON: %s", e)
         return {
             "statusCode": 400,
-            "headers": CORS_HEADERS,
+            "headers": _cors_headers(event),
             "body": json.dumps({
                 "error": "Invalid JSON in request body",
                 "retry_allowed": False,
@@ -117,7 +128,7 @@ def lambda_handler(event, context):
         logger.warning("[lambda:vibe_check] ClewException: %s", e.technical_message)
         return {
             "statusCode": e.http_status,
-            "headers": CORS_HEADERS,
+            "headers": _cors_headers(event),
             "body": json.dumps({
                 "error": e.user_message,
                 "retry_allowed": e.retry_allowed,
@@ -128,7 +139,7 @@ def lambda_handler(event, context):
         logger.error("[lambda:vibe_check] Unexpected error: %s", e, exc_info=True)
         return {
             "statusCode": 500,
-            "headers": CORS_HEADERS,
+            "headers": _cors_headers(event),
             "body": json.dumps({
                 "error": (
                     "We encountered an unexpected error. "
