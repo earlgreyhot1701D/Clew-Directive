@@ -14,6 +14,7 @@ This is the expensive model — every call counts.
 import asyncio
 import json
 import logging
+import re
 from typing import Any
 
 from strands import Agent
@@ -28,6 +29,48 @@ logger = logging.getLogger("clew.agent.navigator")
 
 # Timeout for Bedrock calls (seconds)
 BEDROCK_TIMEOUT = 30
+
+
+def fix_capitalization(text: str) -> str:
+    """
+    Fix common capitalization issues in generated text.
+    
+    Handles:
+    - Sentence starts (after . ! ? followed by space)
+    - Standalone "I" and I-contractions (I've, I'm, I'll, I'd, I're)
+    - AI acronym (should always be uppercase)
+    - First character of entire text
+    
+    Args:
+        text: The text to fix
+        
+    Returns:
+        Text with corrected capitalization
+    """
+    if not text:
+        return text
+    
+    # Fix sentence starts (after . ! ? followed by space)
+    sentences = re.split(r'([.!?]\s+)', text)
+    fixed = []
+    for i, part in enumerate(sentences):
+        if i % 2 == 0 and part:  # Text parts, not delimiters
+            part = part[0].upper() + part[1:] if part else part
+        fixed.append(part)
+    text = ''.join(fixed)
+    
+    # Fix standalone I and I-contractions
+    text = re.sub(r'\bi\b', 'I', text)
+    text = re.sub(r"\bi'(ve|m|ll|d|re)\b", r"I'\1", text, flags=re.IGNORECASE)
+    
+    # Fix AI acronym (should always be uppercase)
+    text = re.sub(r'\bai\b', 'AI', text, flags=re.IGNORECASE)
+    
+    # Ensure first character of entire text is capitalized
+    if text:
+        text = text[0].upper() + text[1:]
+    
+    return text
 
 
 # Vibe Check question definitions
@@ -163,6 +206,9 @@ Generate the profile summary:"""
                     f"Response too short: {len(profile)} chars"
                 )
             
+            # Fix capitalization issues before returning
+            profile = fix_capitalization(profile)
+            
             logger.info("[agent:navigator] Profile synthesized: %d chars", len(profile))
             return profile
             
@@ -243,6 +289,9 @@ Revised profile:"""
                 logger.warning("[agent:navigator] Refined profile too short, using original")
                 return original_profile
             
+            # Fix capitalization issues before returning
+            refined_profile = fix_capitalization(refined_profile)
+            
             logger.info("[agent:navigator] Profile refined: %d chars", len(refined_profile))
             return refined_profile
             
@@ -275,10 +324,12 @@ Revised profile:"""
         style = vibe_check_responses.get('learning_style', 'at your own pace')
         context = vibe_check_responses.get('context', 'your field')
         
-        return f"""You're approaching AI with a {skepticism.lower()} mindset, which is exactly 
+        profile = f"""You're approaching AI with a {skepticism.lower()} mindset, which is exactly 
         the right place to start. Your main goal is to {goal.lower()}, and you prefer learning 
         by {style.lower()}. Given your background in {context.lower()}, we'll focus on resources 
         that connect AI concepts to practical applications in your domain."""
+        
+        return fix_capitalization(profile)
 
     def generate_learning_path(
         self,
@@ -403,7 +454,7 @@ Generate the learning path JSON now:"""
                 )
             
             # Add profile summary to output
-            path_data["profile_summary"] = profile_summary
+            path_data["profile_summary"] = fix_capitalization(profile_summary)
             
             # Validate structure
             if not self._validate_learning_path(path_data):
