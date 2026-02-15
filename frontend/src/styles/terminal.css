@@ -1,0 +1,125 @@
+/*
+ * Retro-Terminal Aesthetic — Clew Directive
+ *
+ * WCAG 2.1 AA Compliance:
+ *   - All text meets 4.5:1 contrast (normal) or 3:1 (large)
+ *   - Animations respect prefers-reduced-motion
+ *   - Focus indicators visible at 3:1 contrast
+ *   - No content flashes more than 3 times/second
+ */
+
+/* Terminal container */
+.terminal {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Blinking cursor — disabled for reduced motion */
+.cursor {
+  display: inline-block;
+  width: 8px;
+  height: 1.2em;
+  background: var(--text-primary);
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Terminal typing effect — shows instantly for reduced motion */
+.typing-text {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 1.5s steps(40, end);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typing-text {
+    animation: none;
+    overflow: visible;
+    white-space: normal;
+  }
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Option buttons — terminal style */
+.terminal-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 12px 16px;
+  margin: 8px 0;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.terminal-option:hover {
+  background: var(--bg-surface);
+  border-color: var(--text-primary);
+}
+
+.terminal-option:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Active/selected option */
+.terminal-option.selected {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  border-color: var(--text-primary);
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  border: 1px solid var(--text-dim);
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-right: 6px;
+  margin-bottom: 4px;
+}
+
+.badge-free {
+  border-color: #4caf50;
+  color: #81c784;  /* Green on dark bg — 4.7:1 contrast */
+}
+
+/* Resource card */
+.resource-card {
+  border: 1px solid var(--border-color);
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.resource-card a {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.resource-card a:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}

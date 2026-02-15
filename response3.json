@@ -1,0 +1,1 @@
+{"statusCode": 500, "headers": {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Allow-Methods": "POST, OPTIONS"}, "body": "{\"error\": \"We encountered an unexpected error. Please try again or contact support if the problem persists.\", \"retry_allowed\": true}"}

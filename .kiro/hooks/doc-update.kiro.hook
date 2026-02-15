@@ -1,0 +1,13 @@
+{
+  "name": "Documentation Update",
+  "version": "1.0.0",
+  "description": "Auto-updates API docs and README when endpoints change",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["backend/agents/orchestrator.py", "backend/interfaces/**/*.py", "infrastructure/lib/**/*.ts"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Update documentation based on the changes: Keep API endpoint documentation current in README.md, update architecture section if new services added, document any new interface contracts, update .env.example if new config variables added."
+  }
+}

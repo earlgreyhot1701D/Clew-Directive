@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Environment
+.env
+.env.local
+.env.production
+.env.*.local
+
+# AWS Credentials (NEVER commit these!)
+.aws/
+*credentials*
+*secret*
+*.pem
+*.key
+
+# Build outputs
+.next/
+out/
+dist/
+cdk.out/
+*.js.map
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Temporary files
+/tmp/
+*.pdf
+
+# CDK
+cdk.context.json

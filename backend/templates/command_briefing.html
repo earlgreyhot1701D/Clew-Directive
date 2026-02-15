@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Command Briefing — Clew Directive</title>
+    <style>
+        /* WCAG 2.1 AA compliant colors
+           Primary: #FDC500 on #0A233F = ~9.5:1 contrast ratio (exceeds AAA)
+           Body text: #1a1a1a on #fdfdfd = ~17:1 (exceeds AAA)
+        */
+        @page {
+            size: letter;
+            margin: 1in 0.75in;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            color: #1a1a1a;
+            background: #fdfdfd;
+            line-height: 1.6;
+            font-size: 11pt;
+        }
+
+        .cover-header {
+            background: #0A233F;
+            color: #FDC500;
+            padding: 2rem;
+            text-align: center;
+            margin: -1in -0.75in 2rem -0.75in;
+            padding-top: 3rem;
+            padding-bottom: 3rem;
+        }
+
+        .cover-header h1 {
+            font-size: 28pt;
+            letter-spacing: 4px;
+            margin: 0 0 0.5rem 0;
+            text-transform: uppercase;
+        }
+
+        .cover-header .tagline {
+            font-size: 11pt;
+            opacity: 0.9;
+        }
+
+        .cover-header .meta {
+            font-size: 9pt;
+            margin-top: 1.5rem;
+            opacity: 0.7;
+        }
+
+        h2 {
+            color: #0A233F;
+            border-bottom: 2px solid #0A233F;
+            padding-bottom: 0.3rem;
+            font-size: 14pt;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 2rem;
+        }
+
+        .profile-summary {
+            background: #f0f4f8;
+            border-left: 4px solid #0A233F;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            font-style: italic;
+        }
+
+        .resource-entry {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            page-break-inside: avoid;
+        }
+
+        .resource-entry .resource-name {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #0A233F;
+        }
+
+        .resource-entry .resource-name a {
+            color: #0A233F;
+            text-decoration: underline;
+        }
+
+        .resource-entry .provider {
+            font-size: 9pt;
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+
+        .resource-entry .provider a {
+            color: #555;
+        }
+
+        .resource-entry .why-for-you {
+            margin: 0.5rem 0;
+        }
+
+        .resource-entry .badges {
+            font-size: 9pt;
+            color: #333;
+            margin-top: 0.5rem;
+        }
+
+        .resource-entry .badges span {
+            display: inline-block;
+            border: 1px solid #999;
+            padding: 2px 6px;
+            margin-right: 6px;
+            border-radius: 3px;
+        }
+
+        .resource-entry .sequence-note {
+            font-size: 10pt;
+            font-weight: bold;
+            color: #0A233F;
+            margin-top: 0.5rem;
+        }
+
+        .free-badge {
+            background: #e8f5e9;
+            border-color: #4caf50 !important;
+            color: #2e7d32;
+        }
+
+        .about-section {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ddd;
+            font-size: 9pt;
+            color: #666;
+        }
+
+        .about-section a {
+            color: #0A233F;
+        }
+
+        .footer-note {
+            font-size: 8pt;
+            color: #999;
+            text-align: center;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PAGE 1: COVER -->
+    <div class="cover-header">
+        <h1>Command Briefing</h1>
+        <div class="tagline">Stop following the hype. Start directing the search.</div>
+        <div class="meta">
+            Prepared for: AI Explorer<br>
+            Generated: {{ generated_date }}<br>
+            Clew Directive v1.0
+        </div>
+    </div>
+
+    <!-- SECTION 1: PROFILE SUMMARY -->
+    <h2>// Your Profile</h2>
+    <div class="profile-summary">
+        {{ profile_summary }}
+    </div>
+
+    <!-- SECTION 2: LEARNING PATH -->
+    <h2>// Your Learning Path</h2>
+    {% for resource in recommended_resources %}
+    <div class="resource-entry">
+        <div class="resource-name">
+            {{ resource.sequence_order }}. <a href="{{ resource.resource_url }}">{{ resource.resource_name }}</a>
+        </div>
+        <div class="provider">
+            <a href="{{ resource.provider_url }}">{{ resource.provider }}</a>
+        </div>
+        <div class="why-for-you">
+            {{ resource.why_for_you }}
+        </div>
+        <div class="badges">
+            <span>{{ resource.difficulty }}</span>
+            <span>{{ resource.estimated_hours }} hours</span>
+            <span>{{ resource.format }}</span>
+            <span class="free-badge">{{ resource.free_model }}</span>
+        </div>
+        <div class="sequence-note">
+            {{ resource.sequence_note }}
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- SECTION 3: WHAT TO EXPECT -->
+    <h2>// What to Expect</h2>
+    <p>{{ approach_guidance }}</p>
+    <p><strong>Total estimated time:</strong> {{ total_estimated_hours }} hours</p>
+
+    <!-- SECTION 4: ABOUT -->
+    <div class="about-section">
+        <h2>// About This Briefing</h2>
+        <p>This briefing was generated by <strong>Clew Directive</strong>, a free, open-source AI learning navigator.</p>
+        <p>Every resource was verified as active and free on {{ verification_date }}.</p>
+        <p><strong>No data from this session was stored.</strong> This PDF is your only record.</p>
+        <p>
+            Want to help? Contribute resources or code:
+            <a href="https://github.com/team-docket-1701d/clew-directive">GitHub</a>
+        </p>
+    </div>
+
+    <div class="footer-note">
+        Links verified as of {{ verification_date }}. If broken, visit clewdirective.com for the current directory.
+    </div>
+
+</body>
+</html>

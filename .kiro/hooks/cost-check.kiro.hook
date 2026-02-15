@@ -1,0 +1,13 @@
+{
+  "name": "Cost Impact Check",
+  "version": "1.0.0",
+  "description": "Estimates cost impact when infrastructure code changes",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["infrastructure/**/*.ts", "backend/config/models.py"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Review the changes for cost impact: Flag any new AWS service not in the approved list (see tech.md), verify Lambda memory/timeout stays within Free Tier bounds, check that reserved concurrency limits are set, verify API Gateway throttling is configured, alert if a Bedrock model is changed to a more expensive tier, ensure EventBridge schedule doesn't exceed free invocations."
+  }
+}

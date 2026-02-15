@@ -1,0 +1,515 @@
+# Clew Directive
+
+**Stop following the hype. Start directing the search.**
+
+Clew Directive is a free, open-source, stateless AI tool that generates personalized **Command Briefing** PDFs — mapping new AI learners to the best free learning resources based on their goals, experience, and learning style.
+
+No accounts. No tracking. No paywalls. Your briefing is yours.
+
+---
+
+## Why This Exists
+
+The AI education landscape is overwhelming. Thousands of courses, tutorials, and certifications compete for attention — most behind paywalls, many outdated, few personalized. People who could benefit most from AI literacy are the most likely to be lost in the noise.
+
+Clew Directive cuts through it. Take a 60-second **Vibe Check**, get a personalized learning path from verified, free resources, download your **Command Briefing** PDF, and go. That's it.
+
+---
+
+## How It Works
+
+```
+User arrives → Privacy notice
+     ↓
+Vibe Check (4 questions)
+     ↓
+Navigator synthesizes profile → "Does this sound like you?"
+     ↓                               ↓
+[That's me ✓]                  [Not quite ✗] → correction → re-generate (1 max)
+     ↓
+Scout verifies resources (live URL checks)
+     ↓
+Navigator generates personalized learning path
+     ↓
+UI displays results with live links + PDF download
+     ↓
+Session purged — no data stored
+```
+
+## Architecture
+
+**Deployment**: Serverless on AWS using CDK (Infrastructure-as-Code)
+
+```
+┌─────────────┐     ┌──────────────┐     ┌────────────────┐
+│   Next.js   │────▶│ API Gateway  │────▶│    Lambda       │
+│  (Amplify)  │     │ (rate limit) │     │  (Orchestrator) │
+└─────────────┘     └──────────────┘     └───────┬────────┘
+                                                  │
+                                    ┌─────────────┴─────────────┐
+                                    │                           │
+                              ┌─────▼──────┐            ┌──────▼──────┐
+                              │   Scout    │            │  Navigator  │
+                              │ (Nova Micro)│            │(Claude 4    │
+                              │ $0.000035/  │            │ Sonnet)     │
+                              │  1K tokens  │            │             │
+                              └─────┬──────┘            └──────┬──────┘
+                                    │                          │
+                              ┌─────▼──────┐            ┌──────▼──────┐
+                              │ S3 JSON    │            │  WeasyPrint │
+                              │ directory  │            │  PDF Gen    │
+                              └────────────┘            └─────────────┘
+
+     ┌─────────────┐
+     │   Curator   │  ← EventBridge (weekly cron)
+     │ (Nova Micro)│  → Verifies URLs, updates directory.json
+     └─────────────┘
+```
+
+**Infrastructure Components**:
+- **3 Lambda Functions**: Vibe Check, Profile Refinement, Briefing Generation
+  - **Docker-based bundling**: Dependencies automatically installed during CDK synthesis
+  - Deployment packages include all Python dependencies from `requirements.txt`
+  - Consistent builds across Windows/Mac/Linux development environments
+- **API Gateway**: REST API with 10 req/sec rate limiting, CORS enabled
+- **S3 Bucket**: Stores directory.json and temporary PDFs (24h TTL)
+- **EventBridge**: Weekly cron trigger for Curator Lambda
+- **IAM Roles**: Least-privilege access for each Lambda function
+- **CloudWatch**: Logs and metrics for monitoring
+
+### Key Decisions
+
+| Decision | Choice | Why |
+|----------|--------|-----|
+| Agent framework | Strands Agents SDK (Python, v1.0 GA) | Production-grade, official Lambda Layer, battle-tested |
+| Scout model | Amazon Nova Micro | 71x cheaper than Sonnet; sufficient for URL verification |
+| Navigator model | Claude 4 Sonnet | Deep reasoning for profile analysis and path generation |
+| Knowledge layer | Curated S3 JSON | Occam's Razor — 23 handpicked resources don't need vector search |
+| Freshness | Curator Lambda (weekly) | Automated URL verification; ~$0.00/month on Free Tier |
+| PDF generation | WeasyPrint | HTML→PDF with clickable links; preserves terminal aesthetic |
+| Frontend | Next.js on Amplify | Live URL for voting period; Free Tier hosting |
+| IaC | TypeScript CDK | All infrastructure defined in code |
+| Accessibility | WCAG 2.1 AA | Social impact tool must be accessible to all |
+| Lambda scaling | Automatic (unreserved) | Scales to account limits; avoids new account issues |
+
+### Cost (Voting Period Estimate)
+
+| Component | Expected Cost |
+|-----------|--------------|
+| Bedrock (500 briefings) | ~$5-15 |
+| Lambda | Free Tier |
+| API Gateway | Free Tier |
+| S3 | Free Tier |
+| Amplify | Free Tier |
+| EventBridge | Free Tier |
+| **Total** | **~$5-15** (covered by $200 credits) |
+
+---
+
+## Resource Curation
+
+Every resource in `directory.json` passes a **5-gate quality standard**:
+
+1. **Authority**: University (Tier 1), major tech provider (Tier 2), or respected platform (Tier 3)
+2. **Truly free**: Learning content accessible without payment
+3. **Current**: Created or updated within 18 months
+4. **Pedagogically sound**: Structured progression with exercises
+5. **Accessible**: No prerequisites to purchase, globally available, self-paced
+
+Current directory: **23 resources** from Helsinki, Stanford, MIT, Harvard, Google, AWS, Microsoft, NVIDIA, DeepLearning.AI, Hugging Face, and IBM.
+
+The Curator Lambda verifies every URL weekly. Status progression: `active → degraded → stale → dead`. Only `active` resources reach users.
+
+---
+
+## Resource Database (v1.0 - MVP)
+
+**Current State**: 23 curated resources covering AI foundations through advanced topics
+
+**Quality Over Quantity**: Each resource passes our 5-gate curation standard:
+1. Authority (trusted source)
+2. Accessibility (free access)
+3. Currency (updated recently)
+4. Clarity (clear outcomes)
+5. Verified (URL checked weekly)
+
+**Coverage**:
+- ✅ Complete beginners → Advanced learners
+- ✅ Conceptual understanding → Hands-on building
+- ✅ Multiple learning styles (courses, tutorials, labs)
+- ✅ Ethics & responsible AI
+
+**Growth Plan**:
+- 🎯 **Q2 2026**: Expand to 50 resources
+- 🎯 **Q3 2026**: Add specialized domains (NLP, Computer Vision, RL)
+- 🎯 **Q4 2026**: Community curation (vetted submissions)
+
+**Why Start Small?** We're validating the curation process and personalization algorithms before scaling. 23 resources is enough to demonstrate meaningful personalization while maintaining quality standards.
+
+---
+
+## Testing
+
+Clew Directive follows a **QA-First** approach: tests are written before or alongside features, not as an afterthought.
+
+### Backend Tests (Python + pytest)
+
+**Test Coverage**: 17 test files covering agents, tools, interfaces, and Lambda handlers
+
+```bash
+cd backend
+pip install -r requirements.txt
+pytest tests/ -v --cov=backend --cov-report=term-missing
+```
+
+**Test Suites**:
+
+| Test File | Coverage | Key Tests |
+|-----------|----------|-----------|
+| `test_lambda_handlers.py` | Lambda entry points | Vibe Check, Profile Refinement, Briefing Generation |
+| `test_navigator.py` | Navigator agent | Profile synthesis, path generation, output structure |
+| `test_navigator_profile.py` | Profile synthesis | Second-person voice, empathetic tone, no PII |
+| `test_navigator_path.py` | Path generation | Resource selection, sequencing, reasoning quality |
+| `test_scout.py` | Scout agent | Resource loading, URL verification, graceful degradation |
+| `test_orchestrator.py` | Orchestration | Agent coordination, error handling, session flow |
+| `test_knowledge_interface.py` | Knowledge layer | S3 directory loading, resource filtering |
+| `test_directory_loader.py` | Directory tool | JSON parsing, schema validation |
+| `test_resource_verifier.py` | URL verification | HTTP HEAD checks, timeout handling, retry logic |
+| `test_pdf.py` | PDF generation | WeasyPrint integration, template rendering |
+| `test_curator.py` | Curator Lambda | Weekly freshness checks, status updates |
+
+**Mocks**:
+- `mocks/bedrock_mocks.py`: Mock Bedrock responses (profiles, paths)
+- `mocks/s3_mocks.py`: Mock S3 directory.json data
+
+**Test Principles**:
+- ✅ No real AWS calls (all mocked)
+- ✅ No real Bedrock calls (mocked responses)
+- ✅ Fast execution (<5 seconds for full suite)
+- ✅ Isolated tests (no shared state)
+- ✅ Clear assertions with descriptive messages
+
+### Frontend Tests (Jest + React Testing Library)
+
+**Test Coverage**: Landing page, accessibility, color contrast
+
+```bash
+cd frontend
+npm test
+```
+
+**Test Suites**:
+
+| Test File | Coverage | Key Tests |
+|-----------|----------|-----------|
+| `tests/landing.test.tsx` | Landing page | Terminal aesthetic, WCAG contrast ratios, component structure |
+
+**Accessibility Tests**:
+- ✅ WCAG AAA contrast (Osprey Navy + Cyber Gold: 13.24:1)
+- ✅ WCAG AAA contrast (Osprey Navy + Dim Gold: 7.18:1)
+- ✅ Color calculations verified programmatically
+
+**Planned Tests** (Phase 8B):
+- Vibe Check form validation
+- Profile feedback flow
+- Learning path display
+- Error handling UI
+- Retry logic
+- Loading states
+
+### Integration Tests
+
+**End-to-End Flow** (Planned for Phase 8C):
+```bash
+# Start local stack
+docker-compose up -d
+
+# Run integration tests
+pytest tests/integration/ -v
+```
+
+**Scenarios**:
+1. Complete flow: Vibe Check → Profile → Refinement → Briefing → PDF
+2. Error scenarios: Timeout, throttle, resource load failure
+3. Graceful degradation: PDF failure, partial resource availability
+4. Performance: Latency targets (<5s profile, <45s briefing)
+
+### Test Commands
+
+**Run all backend tests**:
+```bash
+cd backend
+pytest tests/ -v
+```
+
+**Run specific test file**:
+```bash
+pytest tests/test_navigator.py -v
+```
+
+**Run with coverage report**:
+```bash
+pytest tests/ --cov=backend --cov-report=html
+open htmlcov/index.html
+```
+
+**Run frontend tests**:
+```bash
+cd frontend
+npm test
+```
+
+**Run frontend tests in watch mode**:
+```bash
+npm test -- --watch
+```
+
+### Quality Gates
+
+**Before Merge**:
+- ✅ All tests pass
+- ✅ Coverage >80% for new code
+- ✅ No linting errors
+- ✅ Type checking passes (TypeScript)
+
+**Before Deploy**:
+- ✅ Integration tests pass
+- ✅ Accessibility tests pass (WCAG 2.1 AA)
+- ✅ Performance tests pass (latency targets)
+- ✅ Cost estimation within budget
+
+---
+
+## Quick Start (Local Development)
+
+```bash
+# Clone
+git clone https://github.com/team-docket-1701d/clew-directive.git
+cd clew-directive
+
+# Copy environment config
+cp .env.example .env
+
+# Run with Docker
+docker-compose up
+
+# Frontend: http://localhost:3000
+# Backend:  http://localhost:8000
+```
+
+### Run Tests
+```bash
+cd backend
+pip install -r requirements.txt
+pytest tests/ -v
+```
+
+---
+
+## Deployment to AWS
+
+Clew Directive uses **AWS CDK** (TypeScript) for infrastructure-as-code deployment.
+
+### Prerequisites
+
+- AWS account with Bedrock access
+- AWS CLI installed and configured (`aws configure`)
+- Node.js 20+ and Python 3.12+
+- AWS CDK CLI: `npm install -g aws-cdk`
+
+### Lambda Deployment Package
+
+The CDK deployment uses **Docker container images** for Lambda functions:
+
+**Architecture**:
+- **Container Image**: Self-contained Lambda runtime with all dependencies
+  - Built from `backend/Dockerfile.lambda`
+  - Includes Python 3.12 runtime + all dependencies from `requirements-lambda.txt`
+  - Strands Agents SDK (GA), boto3, WeasyPrint, Jinja2, FastAPI, Pydantic
+  - Application code (agents, tools, handlers)
+- **Size Limit**: Up to 10GB (vs 250MB for ZIP deployment)
+
+**Benefits**:
+- **No size constraints**: Container images support up to 10GB (vs 250MB for ZIP)
+- **Simplified deployment**: Single artifact contains runtime + dependencies + code
+- **Consistent environments**: Same container runs locally and in Lambda
+- **Better for complex dependencies**: WeasyPrint and system libraries included
+- **Faster cold starts**: Optimized container layers
+- **Cross-platform builds**: Docker ensures consistent builds across Windows/Mac/Linux
+
+### Deploy All Stacks
+
+```bash
+cd infrastructure
+
+# Bootstrap CDK (first time only)
+cdk bootstrap
+
+# Build and deploy
+npm run build
+cdk deploy --all
+```
+
+**What happens during deployment**:
+1. TypeScript CDK code compiles
+2. **Container image build**: Docker builds Lambda container from `backend/Dockerfile.lambda`
+   - Installs Python 3.12 runtime
+   - Installs all dependencies from `requirements-lambda.txt`
+   - Copies application code (agents, tools, handlers)
+3. **Image push**: Container image pushed to Amazon ECR (Elastic Container Registry)
+4. CloudFormation templates generated
+5. Stacks deployed to AWS
+
+**Note**: First deployment may take 5-10 minutes as Docker builds the container image. Subsequent deployments are faster:
+- **Code-only changes**: Docker layer caching speeds up builds (~2-3 minutes)
+- **Dependency changes**: Full rebuild required (~5-10 minutes)
+
+The container architecture:
+- Uses `requirements-lambda.txt` (production dependencies only)
+- Based on AWS Lambda Python 3.12 base image
+- Includes system libraries for WeasyPrint (GTK+, Pango, Cairo)
+- Same image used for all 3 Lambda functions
+
+This creates:
+- **Storage Stack**: S3 bucket for directory.json and temporary PDFs
+- **API Stack**: 3 Lambda functions + API Gateway with rate limiting
+- **Curator Stack**: Weekly resource verification Lambda + EventBridge schedule
+
+### Upload Resources
+
+```bash
+# Upload directory.json to S3
+aws s3 cp data/directory.json s3://clew-directive-data-{account-id}/data/directory.json
+```
+
+### Get API URL
+
+```bash
+aws cloudformation describe-stacks \
+  --stack-name ClewDirective-Api \
+  --query 'Stacks[0].Outputs[?OutputKey==`ApiUrl`].OutputValue' \
+  --output text
+```
+
+### Update Frontend
+
+Edit `frontend/.env.local`:
+```env
+NEXT_PUBLIC_API_URL=https://YOUR-API-URL/prod
+```
+
+### Test Deployment
+
+```bash
+# Test Vibe Check endpoint
+curl -X POST https://YOUR-API-URL/prod/vibe-check \
+  -H "Content-Type: application/json" \
+  -d '{"vibe_check_responses":{"skepticism":"Curious","goal":"Understand AI","learning_style":"Reading","context":"Business"}}'
+```
+
+### Bedrock Model Access
+
+AWS now automatically enables Bedrock models on first use. No manual setup required!
+
+If you encounter access errors for Anthropic Claude models:
+1. Go to AWS Console → Bedrock → Model catalog
+2. Select Anthropic Claude
+3. Submit use case details (usually instant approval)
+
+### Monitoring
+
+View Lambda logs:
+```bash
+# Vibe Check logs
+aws logs tail /aws/lambda/ClewDirective-Api-VibeCheckFunction --follow
+
+# Briefing generation logs
+aws logs tail /aws/lambda/ClewDirective-Api-GenerateBriefingFunction --follow
+```
+
+### Cost Management
+
+All infrastructure runs on AWS Free Tier during development. Expected cost during voting period (500 briefings):
+- Bedrock: ~$5-15
+- Infrastructure: $0 (Free Tier)
+
+### Rollback
+
+```bash
+cd infrastructure
+cdk destroy ClewDirective-Api
+cdk destroy ClewDirective-Curator
+cdk destroy ClewDirective-Storage
+```
+
+**Detailed deployment guide**: See `PHASE_8C_API_DEPLOYMENT_GUIDE.md`
+
+---
+
+## Project Structure
+
+```
+clew-directive/
+├── .kiro/                    # Kiro IDE: steering files, hooks, specs
+├── backend/
+│   ├── agents/               # Scout, Navigator, Orchestrator
+│   ├── tools/                # Resource verifier, directory loader, PDF gen
+│   ├── curator/              # Weekly freshness Lambda
+│   ├── interfaces/           # Abstraction contracts (memory, knowledge, tools, email)
+│   ├── config/               # Centralized settings + model tiers
+│   ├── templates/            # Jinja2 HTML for PDF generation
+│   ├── tests/                # QA-First test suite with mocks
+│   ├── requirements.txt      # All dependencies (dev + test + prod)
+│   └── requirements-lambda.txt # Production-only dependencies for Lambda deployment
+├── frontend/                 # Next.js with retro-terminal UI
+├── infrastructure/           # TypeScript CDK stacks
+├── data/                     # directory.json (curated resources)
+└── docs/                     # Accessibility checklist
+```
+
+---
+
+## Development Workflow
+
+**Opus (CTO)** scaffolds architecture, interface contracts, and reviews code.
+**Kiro** generates specs and implements tasks via spec-driven development.
+**Opus** audits Kiro's output for correctness, security, and alignment.
+
+```
+Opus scaffold → Kiro generates specs → Kiro implements → Opus audits
+```
+
+Kiro hooks automate quality gates during development:
+- **test-sync**: Auto-generates tests when agent code changes
+- **security-scan**: Catches leaked credentials and unsafe patterns
+- **cost-check**: Estimates cost impact of infrastructure changes
+- **doc-update**: Keeps API docs current
+
+---
+
+## What's Next
+
+Shipped today as a focused tool for **new AI learners**. The architecture supports expansion:
+
+- **Multiple domains**: Schema includes a `domain` field. MVP uses "ai-foundations." Future: AI for healthcare, educators, creatives, etc.
+- **Email briefings**: Interface stubbed, HTML template ready. Wire up Amazon SES.
+- **AgentCore Memory**: Interface exists. Swap in for cross-session context (with consent).
+- **Long-term memory with consent**: Privacy-first opt-in for returning users.
+- **Community curation**: GitHub issues workflow for resource contributions.
+
+---
+
+## Competition
+
+Built for the [AWS 10,000 AIdeas Competition](https://awsaideas.devpost.com/) — Social Impact category.
+Team: **Docket 1701D**
+
+---
+
+## License
+
+MIT — see [LICENSE](LICENSE)
+
+---
+
+*"Clew Directive ships today as a focused tool for new AI learners. The architecture is domain-agnostic — designed for expansion, shipped for impact."*

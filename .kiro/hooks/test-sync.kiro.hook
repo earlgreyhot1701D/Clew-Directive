@@ -1,0 +1,13 @@
+{
+  "name": "Test Sync",
+  "version": "1.0.0",
+  "description": "Auto-generates or updates unit tests when agent logic is modified",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["backend/agents/**/*.py", "backend/tools/**/*.py", "backend/curator/**/*.py"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Generate or update tests in backend/tests/ for the modified file using pytest. Rules: Every public function must have at least one test, use mocks from backend/tests/mocks/ — never call real AWS services, test both success and failure paths, include golden input→output tests for agent responses, verify no PII appears in any output."
+  }
+}

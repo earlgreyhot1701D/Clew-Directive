@@ -1,0 +1,28 @@
+# Lambda container image for Clew Directive
+# Uses AWS Lambda Python 3.12 base image
+# Updated: 2026-02-15 20:59 - Force rebuild with correct imports
+FROM public.ecr.aws/lambda/python:3.12
+
+# Install system libraries required by WeasyPrint
+RUN microdnf install -y \
+    cairo \
+    pango \
+    gdk-pixbuf2 \
+    libffi-devel \
+    && microdnf clean all
+
+# Copy requirements and install dependencies
+COPY requirements-lambda.txt ${LAMBDA_TASK_ROOT}/
+RUN pip install --no-cache-dir -r ${LAMBDA_TASK_ROOT}/requirements-lambda.txt
+
+# Copy application code
+COPY agents ${LAMBDA_TASK_ROOT}/agents
+COPY config ${LAMBDA_TASK_ROOT}/config
+COPY curator ${LAMBDA_TASK_ROOT}/curator
+COPY interfaces ${LAMBDA_TASK_ROOT}/interfaces
+COPY templates ${LAMBDA_TASK_ROOT}/templates
+COPY tools ${LAMBDA_TASK_ROOT}/tools
+COPY *.py ${LAMBDA_TASK_ROOT}/
+
+# Set default handler (will be overridden by CDK for each function)
+CMD ["lambda_vibe_check.lambda_handler"]

@@ -1,0 +1,51 @@
+# Clew Directive — Local Development
+#
+# Usage: docker-compose up
+# Frontend: http://localhost:3000
+# Backend:  http://localhost:8000
+#
+# Dev mode uses mocked Bedrock responses (no AWS credentials needed).
+
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - CD_ENVIRONMENT=dev
+      - CD_LOG_LEVEL=DEBUG
+      - AWS_REGION=us-east-1
+    volumes:
+      - ./backend:/app
+      - ./data:/app/data:ro
+    command: >
+      python -c "
+      print('Backend running in dev mode (mocked Bedrock)');
+      print('TODO: Add FastAPI or Lambda handler for local serving');
+      import time; time.sleep(3600)
+      "
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000/api
+    volumes:
+      - ./frontend/src:/app/src
+    depends_on:
+      - backend
+
+  # TODO: Add LocalStack for S3 mocking if needed
+  # localstack:
+  #   image: localstack/localstack:latest
+  #   ports:
+  #     - "4566:4566"
+  #   environment:
+  #     - SERVICES=s3

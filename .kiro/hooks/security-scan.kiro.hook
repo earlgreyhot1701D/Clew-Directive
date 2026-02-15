@@ -1,0 +1,13 @@
+{
+  "name": "Security Scan",
+  "version": "1.0.0",
+  "description": "Scans for leaked credentials, API keys, and unsafe patterns",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["**/*.py", "**/*.ts", "**/*.tsx", "**/*.env*"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Perform security scan on the edited file: Check for hardcoded API keys, secrets, or credentials; no AWS access keys or secret keys in source; no PII (names, emails, addresses) in test fixtures; all environment variables referenced via config/settings.py; input validation on all user-facing endpoints; no raw user input passed directly to agent prompts without sanitization; structured logging must scrub sensitive data."
+  }
+}
