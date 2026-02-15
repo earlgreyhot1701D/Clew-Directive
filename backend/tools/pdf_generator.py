@@ -181,12 +181,15 @@ def _upload_to_s3(pdf_bytes: bytes, filename: str) -> str:
 
     try:
         s3_client = boto3.client("s3")
-        bucket_name = os.getenv("PDF_BUCKET_NAME", "clew-directive-pdfs")
+        bucket_name = os.getenv("CD_S3_BUCKET", "clew-directive-data")
+        
+        # Upload to tmp/briefings/ folder (matches CDK write permissions)
+        s3_key = f"tmp/briefings/{filename}"
         
         # Upload with 24-hour lifecycle policy
         s3_client.put_object(
             Bucket=bucket_name,
-            Key=filename,
+            Key=s3_key,
             Body=pdf_bytes,
             ContentType="application/pdf",
             # Tag for lifecycle policy (auto-delete after 24h)
@@ -196,11 +199,11 @@ def _upload_to_s3(pdf_bytes: bytes, filename: str) -> str:
         # Generate presigned URL (valid for 24 hours)
         presigned_url = s3_client.generate_presigned_url(
             "get_object",
-            Params={"Bucket": bucket_name, "Key": filename},
+            Params={"Bucket": bucket_name, "Key": s3_key},
             ExpiresIn=86400,  # 24 hours
         )
         
-        logger.info("[tool:pdf] Uploaded to S3: %s/%s", bucket_name, filename)
+        logger.info("[tool:pdf] Uploaded to S3: %s/%s", bucket_name, s3_key)
         return presigned_url
         
     except ClientError as e:
