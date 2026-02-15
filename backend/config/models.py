@@ -33,7 +33,7 @@ SCOUT_MODEL = ModelTier(
 # Navigator: capable, reasoning-heavy, generates personalized paths
 # Using cross-region inference profile for on-demand throughput support
 NAVIGATOR_MODEL = ModelTier(
-    model_id="us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+    model_id="global.anthropic.claude-sonnet-4-5-20250929-v1:0",
     max_tokens=2000,
     temperature=0.7,
     description="Profile analysis, path reasoning, briefing generation",
