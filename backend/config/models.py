@@ -31,9 +31,9 @@ SCOUT_MODEL = ModelTier(
 )
 
 # Navigator: capable, reasoning-heavy, generates personalized paths
-# Using cross-region inference profile for on-demand throughput support
+# Using Amazon Nova 2 Lite with regional prefix for instant availability
 NAVIGATOR_MODEL = ModelTier(
-    model_id="global.anthropic.claude-sonnet-4-5-20250929-v1:0",
+    model_id="us.amazon.nova-2-lite-v1:0",
     max_tokens=2000,
     temperature=0.7,
     description="Profile analysis, path reasoning, briefing generation",

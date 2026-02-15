@@ -78,7 +78,7 @@ export class ApiStack extends cdk.Stack {
     });
 
     // IAM Permissions: All functions need Bedrock access
-    // Scoped to specific models: Claude Sonnet 4.5 (global inference profile) and Nova Micro
+    // Permissive policy for Nova models across all regions (Strands SDK may use different regions)
     const bedrockPolicy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: [
@@ -86,9 +86,9 @@ export class ApiStack extends cdk.Stack {
         'bedrock:InvokeModelWithResponseStream',
       ],
       resources: [
-        `arn:aws:bedrock:*:${this.account}:inference-profile/global.anthropic.claude-sonnet-4-5-20250929-v1:0`,
-        `arn:aws:bedrock:*::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0`,
-        `arn:aws:bedrock:${this.region}::foundation-model/amazon.nova-micro-v1:0`,
+        // Nova models - all regions, both foundation model and inference profile ARNs
+        `arn:aws:bedrock:*:${this.account}:inference-profile/*nova*`,
+        `arn:aws:bedrock:*::foundation-model/amazon.nova-*`,
       ],
     });
 
