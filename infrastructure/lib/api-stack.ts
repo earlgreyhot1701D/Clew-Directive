@@ -41,7 +41,7 @@ export class ApiStack extends cdk.Stack {
       environment: {
         CD_ENVIRONMENT: 'prod',
         CD_S3_BUCKET: props.dataBucket.bucketName,
-        CD_DIRECTORY_KEY: 'directory.json',
+        CD_DIRECTORY_KEY: 'data/directory.json',
       },
     });
 
@@ -57,7 +57,7 @@ export class ApiStack extends cdk.Stack {
       environment: {
         CD_ENVIRONMENT: 'prod',
         CD_S3_BUCKET: props.dataBucket.bucketName,
-        CD_DIRECTORY_KEY: 'directory.json',
+        CD_DIRECTORY_KEY: 'data/directory.json',
       },
     });
 
@@ -73,7 +73,7 @@ export class ApiStack extends cdk.Stack {
       environment: {
         CD_ENVIRONMENT: 'prod',
         CD_S3_BUCKET: props.dataBucket.bucketName,
-        CD_DIRECTORY_KEY: 'directory.json',
+        CD_DIRECTORY_KEY: 'data/directory.json',
       },
     });
 
