@@ -41,7 +41,7 @@ export class ApiStack extends cdk.Stack {
       environment: {
         CD_ENVIRONMENT: 'prod',
         CD_S3_BUCKET: props.dataBucket.bucketName,
-        CD_DIRECTORY_KEY: 'directory.json',
+        CD_DIRECTORY_KEY: 'data/directory.json',
       },
     });
 
@@ -57,7 +57,7 @@ export class ApiStack extends cdk.Stack {
       environment: {
         CD_ENVIRONMENT: 'prod',
         CD_S3_BUCKET: props.dataBucket.bucketName,
-        CD_DIRECTORY_KEY: 'directory.json',
+        CD_DIRECTORY_KEY: 'data/directory.json',
       },
     });
 
@@ -73,18 +73,23 @@ export class ApiStack extends cdk.Stack {
       environment: {
         CD_ENVIRONMENT: 'prod',
         CD_S3_BUCKET: props.dataBucket.bucketName,
-        CD_DIRECTORY_KEY: 'directory.json',
+        CD_DIRECTORY_KEY: 'data/directory.json',
       },
     });
 
     // IAM Permissions: All functions need Bedrock access
+    // Scoped to specific models: Claude Sonnet 4.5 (global inference profile) and Nova Micro
     const bedrockPolicy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: [
         'bedrock:InvokeModel',
         'bedrock:InvokeModelWithResponseStream',
       ],
-      resources: ['*'], // TODO: Scope to specific model ARNs (Nova Micro, Claude 4 Sonnet)
+      resources: [
+        `arn:aws:bedrock:*:${this.account}:inference-profile/global.anthropic.claude-sonnet-4-5-20250929-v1:0`,
+        `arn:aws:bedrock:*::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0`,
+        `arn:aws:bedrock:${this.region}::foundation-model/amazon.nova-micro-v1:0`,
+      ],
     });
 
     vibeCheckFn.addToRolePolicy(bedrockPolicy);
@@ -97,6 +102,12 @@ export class ApiStack extends cdk.Stack {
     props.dataBucket.grantRead(generateBriefingFn);
     props.dataBucket.grantWrite(generateBriefingFn, 'tmp/briefings/*');
 
+    // Allowed CORS origins — restrict to Amplify domain and local dev
+    const allowedOrigins = [
+      'https://main.d*amplifyapp.com', // Amplify default domain pattern
+      'http://localhost:3000',          // Local development
+    ];
+
     // API Gateway with rate limiting and CORS
     const api = new apigateway.RestApi(this, 'ClewDirectiveApi', {
       restApiName: 'Clew Directive API',
@@ -107,7 +118,7 @@ export class ApiStack extends cdk.Stack {
         stageName: 'prod',
       },
       defaultCorsPreflightOptions: {
-        allowOrigins: apigateway.Cors.ALL_ORIGINS, // TODO: Restrict to Amplify domain in production
+        allowOrigins: allowedOrigins,
         allowMethods: ['POST', 'OPTIONS'],
         allowHeaders: ['Content-Type'],
       },

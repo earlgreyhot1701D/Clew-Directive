@@ -21,7 +21,7 @@ class BedrockConfig:
     """Bedrock model configuration."""
     region: str = "us-east-1"
     scout_model_id: str = "amazon.nova-micro-v1:0"
-    navigator_model_id: str = "anthropic.claude-sonnet-4-20250514-v1:0"
+    navigator_model_id: str = "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
     curator_model_id: str = "amazon.nova-micro-v1:0"
     max_scout_tokens: int = 500
     max_navigator_tokens: int = 2000
@@ -69,7 +69,7 @@ def load_settings() -> Settings:
         scout_model_id=os.getenv("CD_SCOUT_MODEL", "amazon.nova-micro-v1:0"),
         navigator_model_id=os.getenv(
             "CD_NAVIGATOR_MODEL",
-            "anthropic.claude-sonnet-4-20250514-v1:0",
+            "global.anthropic.claude-sonnet-4-5-20250929-v1:0",
         ),
     )
 

@@ -81,9 +81,9 @@ def generate_command_briefing(learning_path: dict) -> str:
         filename = f"command-briefing-{uuid.uuid4().hex[:8]}.pdf"
 
         # Determine environment and save accordingly
-        env_name = os.getenv("ENVIRONMENT", "dev")
-        
-        if env_name in ("production", "staging"):
+        env_name = os.getenv("CD_ENVIRONMENT", "dev")
+
+        if env_name in ("prod", "staging"):
             # Upload to S3 and return presigned URL
             pdf_url = _upload_to_s3(pdf_bytes, filename)
             logger.info("[tool:pdf] Uploaded to S3: %s", pdf_url)
