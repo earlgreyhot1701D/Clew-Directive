@@ -24,6 +24,8 @@ interface ApiStackProps extends cdk.StackProps {
  *   - Memory: 512 MB
  */
 export class ApiStack extends cdk.Stack {
+  public readonly apiUrl: string;
+
   constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id, props);
 
@@ -136,9 +138,12 @@ export class ApiStack extends cdk.Stack {
     const generateBriefingResource = api.root.addResource('generate-briefing');
     generateBriefingResource.addMethod('POST', new apigateway.LambdaIntegration(generateBriefingFn));
 
+    // Store API URL for use by other stacks
+    this.apiUrl = api.url;
+
     // Output API URL for frontend configuration
     new cdk.CfnOutput(this, 'ApiUrl', {
-      value: api.url,
+      value: this.apiUrl,
       description: 'Clew Directive API Gateway URL',
       exportName: 'ClewDirectiveApiUrl',
     });

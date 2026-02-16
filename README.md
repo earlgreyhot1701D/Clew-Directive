@@ -80,9 +80,9 @@ This demonstrates genuine AI reasoning, not keyword matching or collaborative fi
                                     │                           │
                               ┌─────▼──────┐            ┌──────▼──────┐
                               │   Scout    │            │  Navigator  │
-                              │ (Nova Micro)│            │(Claude 4    │
-                              │ $0.000035/  │            │ Sonnet)     │
-                              │  1K tokens  │            │             │
+                              │ (Nova Micro)│            │(Nova lite  │
+                              │ $0.000035/  │            │      )     │
+                              │  1K tokens  │            │            │
                               └─────┬──────┘            └──────┬──────┘
                                     │                          │
                               ┌─────▼──────┐            ┌──────▼──────┐

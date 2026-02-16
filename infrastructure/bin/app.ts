@@ -24,7 +24,7 @@ const env = {
 
 const storage = new StorageStack(app, 'ClewDirective-Storage', { env });
 
-new ApiStack(app, 'ClewDirective-Api', {
+const apiStack = new ApiStack(app, 'ClewDirective-Api', {
   env,
   dataBucket: storage.dataBucket,
 });
@@ -34,4 +34,7 @@ new CuratorStack(app, 'ClewDirective-Curator', {
   dataBucket: storage.dataBucket,
 });
 
-new FrontendStack(app, 'ClewDirective-Frontend', { env });
+new FrontendStack(app, 'ClewDirective-Frontend', {
+  env,
+  apiUrl: apiStack.apiUrl,
+});
