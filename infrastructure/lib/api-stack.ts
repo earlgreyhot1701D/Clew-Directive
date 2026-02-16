@@ -106,8 +106,8 @@ export class ApiStack extends cdk.Stack {
 
     // Allowed CORS origins — restrict to Amplify domain and local dev
     const allowedOrigins = [
-      'https://main.d*amplifyapp.com', // Amplify default domain pattern
-      'http://localhost:3000',          // Local development
+      'https://main.d1rbee1a32avsq.amplifyapp.com', // Amplify production domain
+      'http://localhost:3000',                       // Local development
     ];
 
     // API Gateway with rate limiting and CORS
