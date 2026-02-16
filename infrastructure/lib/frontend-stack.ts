@@ -34,7 +34,7 @@ export class FrontendStack extends cdk.Stack {
         repository: 'Clew-Directive',
         oauthToken: githubToken,
       }),
-      platform: amplify.Platform.WEB_COMPUTE, // Enable SSR for Next.js
+      // Let Amplify auto-detect Next.js from package.json
       environmentVariables: {
         // API Gateway URL for backend
         'NEXT_PUBLIC_API_URL': props.apiUrl,
