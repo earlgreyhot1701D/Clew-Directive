@@ -6,6 +6,10 @@ Clew Directive is a free, open-source, stateless AI tool that generates personal
 
 No accounts. No tracking. No paywalls. Your briefing is yours.
 
+**🚀 Live Demo**: [https://main.d1rbee1a32avsq.amplifyapp.com](https://main.d1rbee1a32avsq.amplifyapp.com)
+
+**Status**: ✅ Deployed to AWS | ✅ AI Personalization Active | ✅ WCAG 2.1 AAA Compliant
+
 ---
 
 ## Why This Exists
@@ -80,8 +84,8 @@ This demonstrates genuine AI reasoning, not keyword matching or collaborative fi
                                     │                           │
                               ┌─────▼──────┐            ┌──────▼──────┐
                               │   Scout    │            │  Navigator  │
-                              │ (Nova Micro)│            │(Nova lite  │
-                              │ $0.000035/  │            │      )     │
+                              │ (Nova Micro)│            │(Nova 2 Lite)│
+                              │ $0.000035/  │            │            │
                               │  1K tokens  │            │            │
                               └─────┬──────┘            └──────┬──────┘
                                     │                          │
@@ -113,13 +117,13 @@ This demonstrates genuine AI reasoning, not keyword matching or collaborative fi
 |----------|--------|-----|
 | Agent framework | Strands Agents SDK (Python, v1.0 GA) | Production-grade, official Lambda Layer, battle-tested |
 | Scout model | Amazon Nova Micro | 71x cheaper than Sonnet; sufficient for URL verification |
-| Navigator model | Claude 4 Sonnet | Deep reasoning for profile analysis and path generation |
+| Navigator model | Amazon Nova 2 Lite | Fast reasoning for profile analysis and path generation; instant access |
 | Knowledge layer | Curated S3 JSON | Occam's Razor — 23 handpicked resources don't need vector search |
 | Freshness | Curator Lambda (weekly) | Automated URL verification; ~$0.00/month on Free Tier |
 | PDF generation | WeasyPrint | HTML→PDF with clickable links; preserves terminal aesthetic |
 | Frontend | Next.js on Amplify | Live URL for voting period; Free Tier hosting |
 | IaC | TypeScript CDK | All infrastructure defined in code |
-| Accessibility | WCAG 2.1 AA | Social impact tool must be accessible to all |
+| Accessibility | WCAG 2.1 AAA | Social impact tool must be accessible to all (13.24:1 contrast) |
 | Lambda scaling | Automatic (unreserved) | Scales to account limits; avoids new account issues |
 
 ### Cost (Voting Period Estimate)
@@ -314,7 +318,7 @@ npm test -- --watch
 
 ```bash
 # Clone
-git clone https://github.com/team-docket-1701d/clew-directive.git
+git clone https://github.com/earlgreyhot1701D/Clew-Directive.git
 cd clew-directive
 
 # Copy environment config
@@ -326,6 +330,17 @@ docker-compose up
 # Frontend: http://localhost:3000
 # Backend:  http://localhost:8000
 ```
+
+### Try the Live Demo
+
+**Production URL**: [https://main.d1rbee1a32avsq.amplifyapp.com](https://main.d1rbee1a32avsq.amplifyapp.com)
+
+The live site is deployed on AWS Amplify with:
+- ✅ Real AI personalization (Amazon Nova 2 Lite)
+- ✅ PDF generation with clickable links
+- ✅ WCAG 2.1 AAA accessibility (13.24:1 contrast)
+- ✅ Progressive loading states
+- ✅ No tracking, no accounts, no data storage
 
 ### Run Tests
 ```bash
@@ -375,10 +390,16 @@ cd infrastructure
 # Bootstrap CDK (first time only)
 cdk bootstrap
 
-# Build and deploy
+# Build and deploy all stacks
 npm run build
 cdk deploy --all
 ```
+
+**Deployed Stacks**:
+1. **ClewDirective-Storage**: S3 bucket for directory.json and PDFs
+2. **ClewDirective-Api**: 3 Lambda functions + API Gateway
+3. **ClewDirective-Curator**: Weekly resource verification
+4. **ClewDirective-Frontend**: Amplify hosting for Next.js app
 
 **What happens during deployment**:
 1. TypeScript CDK code compiles
@@ -389,21 +410,11 @@ cdk deploy --all
 3. **Image push**: Container image pushed to Amazon ECR (Elastic Container Registry)
 4. CloudFormation templates generated
 5. Stacks deployed to AWS
+6. **Frontend deployment**: Amplify connects to GitHub and auto-builds on push
 
 **Note**: First deployment may take 5-10 minutes as Docker builds the container image. Subsequent deployments are faster:
 - **Code-only changes**: Docker layer caching speeds up builds (~2-3 minutes)
 - **Dependency changes**: Full rebuild required (~5-10 minutes)
-
-The container architecture:
-- Uses `requirements-lambda.txt` (production dependencies only)
-- Based on AWS Lambda Python 3.12 base image
-- Includes system libraries for WeasyPrint (GTK+, Pango, Cairo)
-- Same image used for all 3 Lambda functions
-
-This creates:
-- **Storage Stack**: S3 bucket for directory.json and temporary PDFs
-- **API Stack**: 3 Lambda functions + API Gateway with rate limiting
-- **Curator Stack**: Weekly resource verification Lambda + EventBridge schedule
 
 ### Upload Resources
 
@@ -412,39 +423,53 @@ This creates:
 aws s3 cp data/directory.json s3://clew-directive-data-{account-id}/data/directory.json
 ```
 
-### Get API URL
+### Get Deployment URLs
 
 ```bash
+# API Gateway URL
 aws cloudformation describe-stacks \
   --stack-name ClewDirective-Api \
   --query 'Stacks[0].Outputs[?OutputKey==`ApiUrl`].OutputValue' \
   --output text
+
+# Amplify Frontend URL
+aws cloudformation describe-stacks \
+  --stack-name ClewDirective-Frontend \
+  --query 'Stacks[0].Outputs[?OutputKey==`AmplifyAppUrl`].OutputValue' \
+  --output text
 ```
 
-### Update Frontend
-
-Edit `frontend/.env.local`:
-```env
-NEXT_PUBLIC_API_URL=https://YOUR-API-URL/prod
-```
+**Current Production URLs**:
+- **Frontend**: https://main.d1rbee1a32avsq.amplifyapp.com
+- **API**: https://27o094toch.execute-api.us-east-1.amazonaws.com/prod/
 
 ### Test Deployment
 
 ```bash
 # Test Vibe Check endpoint
-curl -X POST https://YOUR-API-URL/prod/vibe-check \
+curl -X POST https://27o094toch.execute-api.us-east-1.amazonaws.com/prod/vibe-check \
   -H "Content-Type: application/json" \
-  -d '{"vibe_check_responses":{"skepticism":"Curious","goal":"Understand AI","learning_style":"Reading","context":"Business"}}'
+  -d '{"vibe_check_responses":{"skepticism":"Curious but haven'\''t started learning","goal":"Understand what AI actually is and isn'\''t","learning_style":"Reading and thinking at my own pace","context":"Business / Marketing / Operations"}}'
+
+# Expected response: JSON with "profile" field containing personalized summary
 ```
+
+Or visit the live frontend: **https://main.d1rbee1a32avsq.amplifyapp.com**
 
 ### Bedrock Model Access
 
-AWS now automatically enables Bedrock models on first use. No manual setup required!
+**AWS now automatically enables Bedrock models on first use.** No manual setup required!
 
-If you encounter access errors for Anthropic Claude models:
-1. Go to AWS Console → Bedrock → Model catalog
-2. Select Anthropic Claude
-3. Submit use case details (usually instant approval)
+**Models Used**:
+- **Amazon Nova Micro**: Scout agent (resource verification)
+- **Amazon Nova 2 Lite**: Navigator agent (profile synthesis, path generation)
+
+Both Nova models are instantly available in all AWS accounts. No approval process needed.
+
+**If you encounter access errors**:
+1. Verify your AWS account has Bedrock enabled in your region (us-east-1 recommended)
+2. Check IAM permissions include `bedrock:InvokeModel` and `bedrock:InvokeModelWithResponseStream`
+3. Try invoking the model once from the Bedrock Playground to activate it
 
 ### Monitoring
 
@@ -467,10 +492,15 @@ All infrastructure runs on AWS Free Tier during development. Expected cost durin
 
 ```bash
 cd infrastructure
-cdk destroy ClewDirective-Api
+
+# Destroy stacks in reverse order
+cdk destroy ClewDirective-Frontend
 cdk destroy ClewDirective-Curator
+cdk destroy ClewDirective-Api
 cdk destroy ClewDirective-Storage
 ```
+
+**Note**: Destroying the Storage stack will delete the S3 bucket and all PDFs. Make sure to backup `directory.json` first if needed.
 
 **Detailed deployment guide**: See `PHASE_8C_API_DEPLOYMENT_GUIDE.md`
 
