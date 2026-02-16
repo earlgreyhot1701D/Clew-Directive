@@ -34,11 +34,14 @@ export class FrontendStack extends cdk.Stack {
         repository: 'Clew-Directive',
         oauthToken: githubToken,
       }),
+      platform: amplify.Platform.WEB_COMPUTE, // Enable SSR for Next.js
       environmentVariables: {
         // API Gateway URL for backend
         'NEXT_PUBLIC_API_URL': props.apiUrl,
         // Next.js build optimization
         'NEXT_TELEMETRY_DISABLED': '1',
+        // Amplify Next.js detection
+        'AMPLIFY_MONOREPO_APP_ROOT': 'frontend',
         '_LIVE_UPDATES': JSON.stringify([
           {
             pkg: 'next',
@@ -47,33 +50,7 @@ export class FrontendStack extends cdk.Stack {
           },
         ]),
       },
-      buildSpec: codebuild.BuildSpec.fromObjectToYaml({
-        version: '1.0',
-        frontend: {
-          phases: {
-            preBuild: {
-              commands: [
-                'cd frontend',
-                'npm ci',
-              ],
-            },
-            build: {
-              commands: [
-                'npm run build',
-              ],
-            },
-          },
-          artifacts: {
-            baseDirectory: 'frontend/.next',
-            files: ['**/*'],
-          },
-          cache: {
-            paths: [
-              'frontend/node_modules/**/*',
-            ],
-          },
-        },
-      }),
+      // Build spec is defined in amplify.yml in the repository root
     });
 
     // Add main branch
