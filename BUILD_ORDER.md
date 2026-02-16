@@ -6,54 +6,46 @@
 
 ---
 
-## Current Status: Phase 8C DEPLOYED ✅ - System 95% Operational
+## Current Status: Phase 9 COMPLETE ✅ - System 100% Operational
 
 **Last Updated**: February 15, 2026  
-**Completed**: Phases 0-8C (Foundation → AWS Deployment)  
-**Next**: Final PDF deployment + Frontend to Amplify
+**Completed**: Phases 0-9 (Foundation → Frontend → AWS Deployment → AI Personalization)  
+**Next**: Deploy Frontend to Amplify (Phase 10)
 
-### 🎉 MAJOR MILESTONE: API FULLY DEPLOYED TO AWS
+### 🎉 MAJOR MILESTONE: AI PERSONALIZATION WORKING!
 
-All three API endpoints are now live and operational:
-- ✅ **POST /vibe-check** - Generating personalized profiles (200 OK)
-- ✅ **POST /refine-profile** - Refining profiles based on feedback (200 OK)
-- ✅ **POST /generate-briefing** - Returning 4-6 curated resources (200 OK)
+**System Status: 100% Operational**
+- ✅ **POST /vibe-check** - Generating unique AI profiles (200 OK)
+- ✅ **POST /refine-profile** - Refining profiles with user feedback (200 OK)
+- ✅ **POST /generate-briefing** - Personalized learning paths (200 OK)
+- ✅ **PDF Generation** - Working with S3 upload
+- ✅ **AI Personalization** - Different users get different resources!
 
 **API Gateway URL**: `https://27o094toch.execute-api.us-east-1.amazonaws.com/prod/`
 
 ### Recently Completed (Feb 15, 2026):
-- ✅ **Lambda Container Deployment**: All 3 Lambda functions deployed with Docker images
-- ✅ **API Gateway Fixed**: Resolved 404 errors, all routes working
-- ✅ **S3 Configuration**: directory.json uploaded to correct path (`data/directory.json`)
-- ✅ **Environment Variables**: Updated all Lambda functions with correct S3 paths
-- ✅ **Bedrock Integration**: Claude Sonnet 4.5 + Nova Micro working
-- ✅ **Scout Agent**: Successfully loading and verifying resources from S3
-- ✅ **Navigator Agent**: Generating personalized profiles and learning paths
-- ✅ **PDF Generator Fix**: Code updated to use correct S3 bucket and path (ready to deploy)
-- ✅ **Comprehensive Tests**: Added S3 upload tests for PDF generator
+- ✅ **Bedrock Model Access**: Activated Nova models in playground
+- ✅ **Model Switch**: Changed Navigator from Claude Sonnet 4.5 to Nova 2 Lite (`us.amazon.nova-2-lite-v1:0`)
+- ✅ **IAM Permissions Fixed**: Added `bedrock:InvokeModelWithResponseStream` permission
+- ✅ **Wildcard Permissions**: Nova models accessible across all regions
+- ✅ **Capitalization Fixes**: Applied to all Navigator responses
+- ✅ **PDF Generator Deployed**: S3 bucket and path fixes applied
+- ✅ **Curator Deployed**: Weekly freshness checks active
 
-### What's Working:
-- ✅ All 3 API endpoints returning 200 OK
-- ✅ Vibe Check generating unique profiles per user
-- ✅ Profile refinement incorporating user feedback
-- ✅ Learning paths with 4-6 curated resources (105 hours total)
-- ✅ Resources loading from S3 directory.json
-- ✅ Bedrock API calls successful (Claude Sonnet 4.5)
-- ✅ Error handling with graceful degradation
-- ⏳ PDF generation (fix committed, awaiting deployment)
+### Personalization Test Results:
+**Skeptical Academic**: 4 resources (ethics-focused) - 105 hours
+- Introduction to AI → Ethics of AI → Building AI → CS50's AI
 
-### Test Results:
-```json
-{
-  "recommended_resources": [
-    {"resource_name": "Introduction to AI", "estimated_hours": 30},
-    {"resource_name": "Ethics of AI", "estimated_hours": 15},
-    {"resource_name": "Building AI", "estimated_hours": 20},
-    {"resource_name": "CS50's Introduction to AI", "estimated_hours": 40}
-  ],
-  "total_estimated_hours": 105,
-  "pdf_url": null  // Will be populated after next deployment
-}
+**Hands-on Builder**: 4 resources (project-based) - 115 hours  
+- Introduction to AI → Building AI → CS50's AI → Generative AI for Beginners
+
+**Business Professional**: 5 resources (business tools) - 56 hours
+- Introduction to AI → AI for Everyone → Google Prompting → AI for Business → Google AI Essentials
+
+**Key Metrics**:
+- ✅ **9 unique resources** across 3 users (vs 4 identical in fallback mode)
+- ✅ **Profiles are unique** and AI-generated (not template-based)
+- ✅ **Path length varies** (4-5 resources, 56-115 hours) based on needs
 ```
 
 ---
@@ -469,22 +461,31 @@ assert len(pdf_bytes) > 0
 ### Task 7.2: Deploy Curator Lambda ✅
 **Prerequisites**: Task 7.1 complete
 
-**Location**: `backend/lambda_curator.py`
+**Location**: `backend/lambda_curator.py`, `infrastructure/lib/curator-stack.ts`
 
-**Status**: ✅ COMPLETE (Lambda wrapper ready for deployment)
+**Status**: ✅ DEPLOYED TO AWS
 
 **Completed Actions**:
 1. ✅ Created Lambda wrapper (`backend/lambda_curator.py`)
-2. ✅ Integrated with existing curator logic
-3. ✅ Error handling and logging
-4. 🔴 CDK deployment pending (will deploy with Phase 8C)
+2. ✅ Created CDK stack (`infrastructure/lib/curator-stack.ts`)
+3. ✅ Deployed to AWS with EventBridge weekly schedule (Sundays 2AM UTC)
+4. ✅ IAM permissions for S3 read/write and Bedrock access
+5. ✅ CloudFormation stack status: CREATE_COMPLETE
 
-**Deliverables**: Lambda handler ready
+**Deliverables**: 
+- Lambda function: `ClewDirective-Curator-CuratorFunction`
+- EventBridge rule: Weekly cron trigger
+- S3 permissions: Read/write `data/directory.json`
 
-**Validation**: Code complete, tests passing  
+**Validation**: 
+```bash
+aws cloudformation describe-stacks --stack-name ClewDirective-Curator
+# Status: CREATE_COMPLETE
+```
+
 **Effort**: S
 
-**Note**: CDK deployment to AWS will happen in Phase 8C alongside API deployment
+**Note**: Curator runs automatically every Sunday at 2AM UTC to verify all resource URLs
 
 ---
 
@@ -1104,12 +1105,14 @@ aws --endpoint-url=http://localhost:4566 s3 ls
 - [x] Frontend connected to real API
 - [x] E2E test with real API calls working
 - [x] Curator Lambda logic complete and tested
-- [x] Lambda wrapper for curator ready
+- [x] **Curator Lambda deployed to AWS**
+- [x] **EventBridge weekly schedule active**
 - [x] CDK infrastructure code complete
 - [x] CDK stacks synthesize successfully
 - [x] Deployment scripts created
 - [x] Deployment guide written
 - [x] **AWS account setup with Bedrock access**
+- [x] **Bedrock models activated (Nova Micro + Nova 2 Lite)**
 - [x] **CDK bootstrap complete**
 - [x] **Storage stack deployed**
 - [x] **directory.json uploaded to S3**
@@ -1117,36 +1120,44 @@ aws --endpoint-url=http://localhost:4566 s3 ls
 - [x] **All 3 endpoints tested and working (200 OK)**
 - [x] **Scout agent loading resources from S3**
 - [x] **Navigator agent generating profiles and paths**
-- [x] **PDF generator fix committed**
-- [x] **Comprehensive S3 upload tests added**
+- [x] **PDF generator deployed and working**
+- [x] **AI personalization working (9 unique resources across 3 test users)**
+- [x] **Capitalization fixes applied to Navigator**
+- [x] **IAM permissions fixed (InvokeModelWithResponseStream)**
+- [x] **Model switched to Nova 2 Lite (instant access)**
+- [x] **README updated with personalization demo**
 
-**Ready for Final Deployment** ⏳:
-- [ ] Deploy PDF generator fix (`cdk deploy ClewDirective-Api --force`)
-- [ ] Verify PDF generation works end-to-end
-- [ ] Deploy Curator stack (scheduled freshness checks)
+**Ready for Public Launch** 🚀:
+- [ ] Deploy frontend to Amplify (public access)
 - [ ] Update frontend API URL to production endpoint
-- [ ] Deploy frontend to Amplify
+- [ ] Test complete flow from public URL
+- [ ] Verify PDF downloads work from public site
 
-**Pending** ⏸️:
-- [ ] Frontend deployed on Amplify
-- [ ] Curator Lambda scheduled
-- [ ] CloudWatch alarms active
+**Infrastructure & Monitoring** ⏸️:
+- [ ] CloudWatch alarms configured
 - [ ] AWS Budgets configured
-- [ ] Rate limiting verified
-- [ ] `docker-compose up` starts all services
-- [ ] Fresh clone works with just Docker
-- [ ] Article drafted
-- [ ] PDF links confirmed clickable in production
+- [ ] Rate limiting verified with load test
+- [ ] Cost tracking dashboard
+
+**Documentation & Launch** ⏸️:
+- [ ] Competition article drafted (1500-2000 words)
+- [ ] Demo video created (optional)
+- [ ] Social media posts prepared
+- [ ] Launch checklist finalized
 
 ---
 
 ## Timeline Estimate
 
 **Original Estimate**: 85-105 hours  
-**Actual Progress**: ~68 hours (Phases 0-8C deployed!)
+**Actual Progress**: ~75 hours (Phases 0-9 complete!)
 
 **Remaining Work**:
-- Phase 8C Final: PDF deployment (1 hour)
+- Phase 10: Frontend to Amplify (2-4 hours)
+- Phase 11-13: Testing, monitoring, documentation (15-20 hours)
+
+**Total Estimated**: 92-99 hours
+**Status**: 95% complete, core functionality 100% operational
 - Phase 10: Frontend Deployment (8-12 hours)
 - Phase 10.5: Docker Configuration (4-6 hours)
 - Phase 11: Testing & QA (8-12 hours)
