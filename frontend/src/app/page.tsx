@@ -32,6 +32,7 @@ export default function Home() {
   const [userCorrection, setUserCorrection] = useState('');
   const [isGeneratingProfile, setIsGeneratingProfile] = useState(false);
   const [isGeneratingBriefing, setIsGeneratingBriefing] = useState(false);
+  const [loadingStep, setLoadingStep] = useState(0);
   const [briefing, setBriefing] = useState<any>(null);
   
   // Error handling state
@@ -151,18 +152,36 @@ export default function Home() {
     if (!profile) return;
     
     setIsGeneratingBriefing(true);
+    setLoadingStep(0);
     setError(null);
     
-    // Scroll to processing section
+    // Progressive loading messages
+    const loadingSteps = [
+      { delay: 0, step: 0 },
+      { delay: 2000, step: 1 },
+      { delay: 5000, step: 2 },
+      { delay: 10000, step: 3 },
+    ];
+    
+    // Set up progressive loading
+    const timers = loadingSteps.map(({ delay, step }) =>
+      setTimeout(() => setLoadingStep(step), delay)
+    );
+    
+    // Scroll to loading section
     setTimeout(() => {
-      document.getElementById('processing')?.scrollIntoView({ 
+      document.getElementById('loading')?.scrollIntoView({ 
         behavior: 'smooth', 
         block: 'start' 
-        });
+      });
     }, 100);
 
     try {
       const response = await generateBriefing(profile);
+      
+      // Clear all timers
+      timers.forEach(timer => clearTimeout(timer));
+      
       setBriefing(response);
       
       // Scroll to briefing section
@@ -173,6 +192,9 @@ export default function Home() {
         });
       }, 100);
     } catch (err) {
+      // Clear all timers
+      timers.forEach(timer => clearTimeout(timer));
+      
       if (err instanceof ClewApiError) {
         setError(err.message);
         setRetryAllowed(err.retryAllowed);
@@ -735,26 +757,170 @@ export default function Home() {
               </section>
             )}
 
-            {/* SECTION 3: PROCESSING - Appears during generation */}
-            {isGeneratingBriefing && (
+            {/* SECTION 3: PROGRESSIVE LOADING - Appears below profile during generation */}
+            {isGeneratingBriefing && !briefing && (
               <section 
-                id="processing" 
+                id="loading" 
                 className="terminal-container"
                 style={{ marginTop: '3rem' }}
-                aria-label="Creating your plan"
+                aria-label="Generating your learning path"
+                aria-live="polite"
               >
-                <h2>━━━ CREATING YOUR PLAN ━━━</h2>
-                <div 
-                  role="log" 
-                  aria-live="polite"
-                  style={{ 
-                    fontFamily: 'monospace',
-                    color: 'var(--text-dim)'
-                  }}
-                >
-                  <div>&gt; Verifying resource availability... ✓</div>
-                  <div>&gt; Analyzing your profile... ⏳</div>
-                  <div>&gt; Building your learning path... ⏳</div>
+                <h2>━━━ GENERATING YOUR LEARNING PATH ━━━</h2>
+                
+                <div style={{ 
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1.5rem',
+                  marginTop: '2rem'
+                }}>
+                  {/* Step 1: Navigator reasoning */}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '1rem',
+                    opacity: loadingStep >= 0 ? 1 : 0.3,
+                    transition: 'opacity 0.5s ease'
+                  }}>
+                    <div style={{ 
+                      fontSize: '1.5rem',
+                      minWidth: '2rem'
+                    }}>
+                      {loadingStep > 0 ? '✓' : '🧠'}
+                    </div>
+                    <div>
+                      <div style={{ 
+                        fontWeight: 'bold',
+                        marginBottom: '0.25rem',
+                        color: loadingStep > 0 ? 'var(--text-primary)' : 'var(--accent-primary)'
+                      }}>
+                        Navigator agent is reasoning about your profile...
+                      </div>
+                      <div style={{ 
+                        fontSize: '0.9rem',
+                        color: 'var(--text-dim)',
+                        lineHeight: '1.5'
+                      }}>
+                        Analyzing your experience level, goals, and learning style
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 2: Curating resources */}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '1rem',
+                    opacity: loadingStep >= 1 ? 1 : 0.3,
+                    transition: 'opacity 0.5s ease'
+                  }}>
+                    <div style={{ 
+                      fontSize: '1.5rem',
+                      minWidth: '2rem'
+                    }}>
+                      {loadingStep > 1 ? '✓' : '📚'}
+                    </div>
+                    <div>
+                      <div style={{ 
+                        fontWeight: 'bold',
+                        marginBottom: '0.25rem',
+                        color: loadingStep > 1 ? 'var(--text-primary)' : loadingStep >= 1 ? 'var(--accent-primary)' : 'var(--text-dim)'
+                      }}>
+                        Curating resources from our directory...
+                      </div>
+                      <div style={{ 
+                        fontSize: '0.9rem',
+                        color: 'var(--text-dim)',
+                        lineHeight: '1.5'
+                      }}>
+                        Filtering 50+ verified resources to match your needs
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 3: Sequencing path */}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '1rem',
+                    opacity: loadingStep >= 2 ? 1 : 0.3,
+                    transition: 'opacity 0.5s ease'
+                  }}>
+                    <div style={{ 
+                      fontSize: '1.5rem',
+                      minWidth: '2rem'
+                    }}>
+                      {loadingStep > 2 ? '✓' : '🎯'}
+                    </div>
+                    <div>
+                      <div style={{ 
+                        fontWeight: 'bold',
+                        marginBottom: '0.25rem',
+                        color: loadingStep > 2 ? 'var(--text-primary)' : loadingStep >= 2 ? 'var(--accent-primary)' : 'var(--text-dim)'
+                      }}>
+                        Sequencing your personalized path...
+                      </div>
+                      <div style={{ 
+                        fontSize: '0.9rem',
+                        color: 'var(--text-dim)',
+                        lineHeight: '1.5'
+                      }}>
+                        Ordering resources from foundational to advanced
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 4: Creating PDF */}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '1rem',
+                    opacity: loadingStep >= 3 ? 1 : 0.3,
+                    transition: 'opacity 0.5s ease'
+                  }}>
+                    <div style={{ 
+                      fontSize: '1.5rem',
+                      minWidth: '2rem'
+                    }}>
+                      📄
+                    </div>
+                    <div>
+                      <div style={{ 
+                        fontWeight: 'bold',
+                        marginBottom: '0.25rem',
+                        color: loadingStep >= 3 ? 'var(--accent-primary)' : 'var(--text-dim)'
+                      }}>
+                        Creating your Command Briefing PDF...
+                      </div>
+                      <div style={{ 
+                        fontSize: '0.9rem',
+                        color: 'var(--text-dim)',
+                        lineHeight: '1.5'
+                      }}>
+                        Generating downloadable plan with clickable links
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Animated spinner */}
+                <div style={{
+                  marginTop: '2rem',
+                  textAlign: 'center',
+                  fontSize: '0.9rem',
+                  color: 'var(--text-dim)'
+                }}>
+                  <div className="spinner" style={{
+                    display: 'inline-block',
+                    width: '20px',
+                    height: '20px',
+                    border: '2px solid var(--border-color)',
+                    borderTopColor: 'var(--accent-primary)',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite',
+                    marginRight: '0.5rem'
+                  }} />
+                  This usually takes 20-30 seconds...
                 </div>
               </section>
             )}
