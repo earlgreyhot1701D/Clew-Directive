@@ -1,6 +1,6 @@
 # WCAG 2.1 AA Accessibility Checklist — Clew Directive
 
-This document maps every WCAG 2.1 AA requirement to the specific CD component it affects, with implementation guidance. Social impact tools that exclude people with disabilities contradict their own mission.
+This document maps every WCAG 2.1 AA requirement to the specific CD component it affects, with implementation guidance. Social good tools that exclude people with disabilities contradict their own mission.
 
 ## Target: WCAG 2.1 Level AA Conformance
 
@@ -140,4 +140,4 @@ The Command Briefing PDF (generated via WeasyPrint) should:
 ---
 
 ## Article Quote
-> "Clew Directive targets WCAG 2.1 AA compliance because a social impact tool that excludes people with disabilities contradicts its own mission."
+> "Clew Directive targets WCAG 2.1 AA compliance because a social good tool that excludes people with disabilities contradicts its own mission."

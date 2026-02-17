@@ -585,6 +585,6 @@ Generate the learning path JSON now:"""
         return {
             "profile_summary": profile_summary,
             "recommended_resources": recommended,
-            "approach_guidance": "Start with the first resource and work through them in order. Take your time to understand each concept before moving forward.",
+            "approach_guidance": f"Begin with {selected[0].get('name')} to build your foundation, then progress through the remaining resources in sequence. Each builds on the previous one.",
             "total_estimated_hours": total_hours,
         }

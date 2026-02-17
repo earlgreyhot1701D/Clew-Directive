@@ -302,7 +302,7 @@ Why this resource:
 
 **Innovation**: "AI teaching AI about AI" — meta approach to democratizing learning
 
-**Social Impact**: 
+**Social Good**: 
 - Removes cost barrier (100% free resources)
 - Removes choice paralysis (curated paths)
 - Respects privacy (stateless architecture)
@@ -357,7 +357,7 @@ Why this resource:
 **Target**: WCAG 2.1 AA Compliance
 
 **Why**: 
-> "A social impact tool that excludes people with disabilities contradicts its own mission."
+> "A social good tool that excludes people with disabilities contradicts its own mission."
 
 **Implementation**:
 - ARIA labels on all interactive elements
@@ -368,7 +368,7 @@ Why this resource:
 - Focus indicators on all focusable elements
 
 **For Article**: 
-> "Clew Directive targets WCAG 2.1 AA compliance because a social impact tool that excludes people with disabilities contradicts its own mission."
+> "Clew Directive targets WCAG 2.1 AA compliance because a social good tool that excludes people with disabilities contradicts its own mission."
 
 ---
 

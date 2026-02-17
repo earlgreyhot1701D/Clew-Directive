@@ -305,7 +305,7 @@ Article Angle:
 
 Kiro's spec-driven development + agent hooks enforced quality gates
 Curator agent keeps directory honest automatically
-WCAG 2.1 AA: Social impact without exclusion
+WCAG 2.1 AA: Social good without exclusion
 
 
 13. Out of Scope (v1)

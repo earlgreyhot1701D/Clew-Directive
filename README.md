@@ -191,7 +191,7 @@ This demonstrates genuine AI reasoning, not keyword matching or collaborative fi
 | PDF generation | WeasyPrint | HTML→PDF with clickable links; preserves terminal aesthetic |
 | Frontend | Next.js on Amplify | Live URL for voting period; Free Tier hosting |
 | IaC | TypeScript CDK | All infrastructure defined in code |
-| Accessibility | WCAG 2.1 AAA | Social impact tool must be accessible to all (13.24:1 contrast) |
+| Accessibility | WCAG 2.1 AAA | Social good tool must be accessible to all (13.24:1 contrast) |
 | Lambda scaling | Automatic (unreserved) | Scales to account limits; avoids new account issues |
 
 ### Cost (Voting Period Estimate)
