@@ -40,6 +40,70 @@ UI displays results with live links + PDF download
 Session purged — no data stored
 ```
 
+---
+
+## Screenshots
+
+### Landing Page
+![Opening Page](docs/Opening%20Page.png)
+
+### Vibe Check (4 Questions)
+<table>
+<tr>
+<td width="50%">
+
+![AI Experience](docs/AI%20Experience.png)
+*Question 1: AI Experience Level*
+
+</td>
+<td width="50%">
+
+![Primary Goal](docs/Primary%20Goal.png)
+*Question 2: Primary Goal*
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+![Learning Style](docs/Learning%20Style.png)
+*Question 3: Learning Style*
+
+</td>
+<td width="50%">
+
+![Background](docs/Background%20See%20My%20Plan.png)
+*Question 4: Background*
+
+</td>
+</tr>
+</table>
+
+### Profile & Approval
+![Learning Profile](docs/Learning%20Profile%20.png)
+*AI-generated profile summary with approval options*
+
+### Generation Process
+![Generating Your Learning Path](docs/Generating%20Your%20Learning%20Path.png)
+*Progressive loading states with real-time updates*
+
+### Learning Plan Results
+![Learning Plan Source 1](docs/Learning%20Plan%20Source%201.png)
+*Personalized resource recommendations with reasoning*
+
+![Time Resources Next Step](docs/Time%20Resources%20Next%20Step.png)
+*Summary with total hours and next steps*
+
+### PDF Download
+![Download My Plan](docs/Download%20My%20Plan.png)
+*Command Briefing PDF with clickable links*
+
+### About Modal
+![About Clew Directive](docs/About%20Clew%20Directive.png)
+*Philosophy, privacy, and curation standards*
+
+---
+
 ## Personalization in Action
 
 **Real test results** showing how Clew Directive adapts to different learners:
