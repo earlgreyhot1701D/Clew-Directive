@@ -4,6 +4,7 @@ import { StorageStack } from '../lib/storage-stack';
 import { ApiStack } from '../lib/api-stack';
 import { CuratorStack } from '../lib/curator-stack';
 import { FrontendStack } from '../lib/frontend-stack';
+import { MonitoringStack } from '../lib/monitoring-stack';
 
 /**
  * Clew Directive CDK App
@@ -13,6 +14,7 @@ import { FrontendStack } from '../lib/frontend-stack';
  *   - ApiStack: API Gateway + Lambda for Scout/Navigator agents
  *   - CuratorStack: Lambda + EventBridge for weekly freshness checks
  *   - FrontendStack: Amplify hosting for Next.js frontend
+ *   - MonitoringStack: CloudWatch alarms + dashboard + SNS notifications
  */
 
 const app = new cdk.App();
@@ -37,4 +39,12 @@ new CuratorStack(app, 'ClewDirective-Curator', {
 new FrontendStack(app, 'ClewDirective-Frontend', {
   env,
   apiUrl: apiStack.apiUrl,
+});
+
+new MonitoringStack(app, 'ClewDirective-Monitoring', {
+  env,
+  vibeCheckFunctionName: apiStack.vibeCheckFunctionName,
+  refineProfileFunctionName: apiStack.refineProfileFunctionName,
+  generateBriefingFunctionName: apiStack.generateBriefingFunctionName,
+  apiGatewayName: apiStack.apiGatewayName,
 });

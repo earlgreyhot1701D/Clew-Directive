@@ -25,6 +25,10 @@ interface ApiStackProps extends cdk.StackProps {
  */
 export class ApiStack extends cdk.Stack {
   public readonly apiUrl: string;
+  public readonly vibeCheckFunctionName: string;
+  public readonly refineProfileFunctionName: string;
+  public readonly generateBriefingFunctionName: string;
+  public readonly apiGatewayName: string;
 
   constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id, props);
@@ -138,8 +142,12 @@ export class ApiStack extends cdk.Stack {
     const generateBriefingResource = api.root.addResource('generate-briefing');
     generateBriefingResource.addMethod('POST', new apigateway.LambdaIntegration(generateBriefingFn));
 
-    // Store API URL for use by other stacks
+    // Store API URL and resource names for use by other stacks
     this.apiUrl = api.url;
+    this.vibeCheckFunctionName = vibeCheckFn.functionName;
+    this.refineProfileFunctionName = refineProfileFn.functionName;
+    this.generateBriefingFunctionName = generateBriefingFn.functionName;
+    this.apiGatewayName = api.restApiId;
 
     // Output API URL for frontend configuration
     new cdk.CfnOutput(this, 'ApiUrl', {
