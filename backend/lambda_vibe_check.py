@@ -29,7 +29,11 @@ from exceptions import ClewException, ValidationError
 logger = logging.getLogger("clew.lambda.vibe_check")
 
 # Allowed CORS origins — must match API Gateway allowedOrigins
-ALLOWED_ORIGINS = {"http://localhost:3000"}
+ALLOWED_ORIGINS = {
+    "https://clewdirective.com",
+    "https://www.clewdirective.com",
+    "http://localhost:3000"
+}
 
 
 def _cors_headers(event: dict) -> dict:
