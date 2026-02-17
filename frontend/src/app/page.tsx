@@ -655,8 +655,26 @@ export default function Home() {
                 onClick={handleGenerateProfile}
                 disabled={Object.keys(vibeCheckResponses).length < 4 || isGeneratingProfile}
                 className="terminal-button"
-                style={{ width: '100%', marginTop: '2rem' }}
+                style={{ 
+                  width: '100%', 
+                  marginTop: '2rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem'
+                }}
               >
+                {isGeneratingProfile && (
+                  <div className="spinner" style={{
+                    display: 'inline-block',
+                    width: '16px',
+                    height: '16px',
+                    border: '2px solid rgba(255, 214, 10, 0.3)',
+                    borderTopColor: 'var(--accent-primary)',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite'
+                  }} />
+                )}
                 {isGeneratingProfile ? 'Creating Your Profile...' : 'See My Plan'}
               </button>
             </section>
