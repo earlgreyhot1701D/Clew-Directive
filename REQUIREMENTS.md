@@ -2,8 +2,7 @@ Clew Directive Requirements Specification
 Version: 1.0
 Date: February 12, 2026
 Project: Clew Directive - AI Learning Navigator
-Competition: AWS 10,000 AIdeas (Social Impact Category)
-Team: Docket 1701D
+Author: La-Shara Cordero
 Tagline: "Stop following the hype. Start directing the search."
 
 Executive Summary

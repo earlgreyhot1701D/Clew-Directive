@@ -11,9 +11,8 @@ Clew Directive (CD) is a free, open-source, stateless AI tool that generates per
 
 **Tagline**: "Stop following the hype. Start directing the search."
 
-**Competition**: AWS 10,000 AIdeas (Social Impact Category)  
-**Team**: Docket 1701D  
-**Status**: Semi-finalist
+**Author**: La-Shara Cordero  
+**Status**: Production-ready, open source
 
 ---
 

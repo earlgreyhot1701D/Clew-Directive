@@ -559,10 +559,12 @@ Shipped today as a focused tool for **new AI learners**. The architecture suppor
 
 ---
 
-## Competition
+## About
 
-Built for the [AWS 10,000 AIdeas Competition](https://awsaideas.devpost.com/) — Social Impact category.
-Team: **Docket 1701D**
+Clew Directive is an open-source AI learning navigator built to democratize AI education.
+
+**Creator**: [La-Shara Cordero](https://www.linkedin.com/in/la-shara-cordero-a0017a11/)  
+**GitHub**: [earlgreyhot1701D/Clew-Directive](https://github.com/earlgreyhot1701D/Clew-Directive)
 
 ---
 

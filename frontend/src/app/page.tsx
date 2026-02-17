@@ -487,7 +487,17 @@ export default function Home() {
                 color: 'var(--text-dim)',
                 textAlign: 'center'
               }}>
-                <p style={{ margin: 0 }}>AWS 10,000 AIdeas • Social Impact Category • Open Source</p>
+                <p style={{ margin: 0 }}>
+                  Open Source • Built by{' '}
+                  <a 
+                    href="https://www.linkedin.com/in/la-shara-cordero-a0017a11/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{ color: 'var(--text-primary)', textDecoration: 'underline' }}
+                  >
+                    La-Shara Cordero
+                  </a>
+                </p>
               </div>
             </section>
           </div>
