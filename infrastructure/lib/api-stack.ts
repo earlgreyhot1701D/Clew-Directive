@@ -145,7 +145,8 @@ export class ApiStack extends cdk.Stack {
     generateBriefingResource.addMethod('POST', new apigateway.LambdaIntegration(generateBriefingFn));
 
     // Store API URL and resource names for use by other stacks
-    this.apiUrl = api.url;
+    // Remove trailing slash from API Gateway URL to prevent double-slash in requests
+    this.apiUrl = api.url.replace(/\/$/, '');
     this.vibeCheckFunctionName = vibeCheckFn.functionName;
     this.refineProfileFunctionName = refineProfileFn.functionName;
     this.generateBriefingFunctionName = generateBriefingFn.functionName;
