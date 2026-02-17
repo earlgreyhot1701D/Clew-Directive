@@ -96,7 +96,11 @@ Session purged — no data stored
 
 ### PDF Download
 ![Download My Plan](docs/Download%20My%20Plan.png)
-*Command Briefing PDF with clickable links*
+*Download button for Command Briefing PDF*
+
+### Command Briefing PDF
+![Command Briefing](docs/Command%20Briefing.png)
+*Example PDF output with clickable resource links*
 
 ### About Modal
 ![About Clew Directive](docs/About%20Clew%20Directive.png)
