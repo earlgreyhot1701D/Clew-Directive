@@ -6,7 +6,7 @@ Clew Directive is a free, open-source, stateless AI tool that generates personal
 
 No accounts. No tracking. No paywalls. Your briefing is yours.
 
-**🚀 Live Demo**: [https://main.d1rbee1a32avsq.amplifyapp.com](https://main.d1rbee1a32avsq.amplifyapp.com)
+**🚀 Live Demo**: [https://clewdirective.com](https://clewdirective.com)
 
 **Status**: ✅ Deployed to AWS | ✅ AI Personalization Active | ✅ WCAG 2.1 AAA Compliant
 
@@ -401,7 +401,7 @@ docker-compose up
 
 ### Try the Live Demo
 
-**Production URL**: [https://main.d1rbee1a32avsq.amplifyapp.com](https://main.d1rbee1a32avsq.amplifyapp.com)
+**Production URL**: [https://clewdirective.com](https://clewdirective.com)
 
 The live site is deployed on AWS Amplify with:
 - ✅ Real AI personalization (Amazon Nova 2 Lite)
@@ -508,7 +508,7 @@ aws cloudformation describe-stacks \
 ```
 
 **Current Production URLs**:
-- **Frontend**: https://main.d1rbee1a32avsq.amplifyapp.com
+- **Frontend**: https://clewdirective.com
 - **API**: https://27o094toch.execute-api.us-east-1.amazonaws.com/prod/
 
 ### Test Deployment
@@ -522,7 +522,7 @@ curl -X POST https://27o094toch.execute-api.us-east-1.amazonaws.com/prod/vibe-ch
 # Expected response: JSON with "profile" field containing personalized summary
 ```
 
-Or visit the live frontend: **https://main.d1rbee1a32avsq.amplifyapp.com**
+Or visit the live frontend: **https://clewdirective.com**
 
 ### Bedrock Model Access
 

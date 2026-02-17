@@ -775,7 +775,7 @@ POST /generate-briefing → 4-6 resources returned ✅
 
 **Deliverables**: 
 - Amplify App ID: `d1rbee1a32avsq`
-- Frontend URL: `https://main.d1rbee1a32avsq.amplifyapp.com`
+- Frontend URL: `https://clewdirective.com` (custom domain via Route 53)
 - Amplify Console: `https://console.aws.amazon.com/amplify/home?region=us-east-1#/d1rbee1a32avsq`
 - Build Status: SUCCEED (1m 44s)
 - CloudFormation Stack: CREATE_COMPLETE
@@ -1151,7 +1151,7 @@ aws --endpoint-url=http://localhost:4566 s3 ls
 
 **Ready for Public Launch** 🚀:
 - [x] **Deploy frontend to Amplify (public access)**
-- [x] **Frontend URL: https://main.d1rbee1a32avsq.amplifyapp.com**
+- [x] **Frontend URL: https://clewdirective.com** (custom domain)
 - [x] **Amplify build completed successfully**
 - [x] **Test complete flow from public URL**
 - [x] **Verify PDF downloads work from public site**
