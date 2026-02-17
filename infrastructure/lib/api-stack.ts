@@ -108,9 +108,11 @@ export class ApiStack extends cdk.Stack {
     props.dataBucket.grantRead(generateBriefingFn);
     props.dataBucket.grantWrite(generateBriefingFn, 'tmp/briefings/*');
 
-    // Allowed CORS origins — restrict to Amplify domain and local dev
+    // Allowed CORS origins — restrict to custom domain and local dev
     const allowedOrigins = [
-      'https://main.d1rbee1a32avsq.amplifyapp.com', // Amplify production domain
+      'https://clewdirective.com',           // Custom domain
+      'https://www.clewdirective.com',       // www subdomain
+      'https://main.d1rbee1a32avsq.amplifyapp.com', // Amplify default (backup)
       'http://localhost:3000',                       // Local development
     ];
 
