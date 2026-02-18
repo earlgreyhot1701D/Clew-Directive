@@ -2,12 +2,15 @@
 Tiered model configuration for Clew Directive agents.
 
 Scout uses the cheapest model (Nova Micro) for simple verification tasks.
-Navigator uses the most capable model (Claude 4 Sonnet) for reasoning.
+Navigator uses Amazon Nova 2 Lite (us.amazon.nova-2-lite-v1:0) for reasoning.
+  Originally planned for Claude Sonnet 4.5, but switched mid-build to Nova 2 Lite
+  for instant regional availability and significantly lower cost — Claude required
+  cross-region inference profiles and approval delays that blocked deployment.
 Curator reuses Scout's model for weekly freshness checks.
 
 Cost per 1K tokens (on-demand, us-east-1):
-  Nova Micro:       $0.000035 input / $0.00014 output
-  Claude 4 Sonnet:  ~$0.003 input  / ~$0.015 output
+  Nova Micro:        $0.000035 input / $0.00014 output
+  Nova 2 Lite:       ~$0.0001 input  / ~$0.0004 output
 """
 
 from dataclasses import dataclass

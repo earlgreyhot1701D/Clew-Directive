@@ -24,7 +24,7 @@ Clew Directive uses a **serverless, event-driven architecture** on AWS with AI a
 - **Agent Framework**: Strands Agents SDK v1.0 GA
 - **AI Models**: 
   - Nova Micro (Scout + Curator)
-  - Claude 4 Sonnet (Navigator)
+  - Amazon Nova 2 Lite (Navigator) — pivoted from Claude Sonnet 4.5 for regional availability and cost
 - **PDF Engine**: WeasyPrint (HTML→PDF with clickable links)
 - **Templates**: Jinja2
 - **Local Dev**: Docker Compose with mocked Bedrock
@@ -64,7 +64,7 @@ Clew Directive uses a **serverless, event-driven architecture** on AWS with AI a
 | Service | Purpose | Cost Model | Budget |
 |---------|---------|------------|--------|
 | **Bedrock (Nova Micro)** | Scout + Curator | $0.000035/1K input | $200 credits |
-| **Bedrock (Claude 4 Sonnet)** | Navigator | Strands default pricing | $200 credits |
+| **Bedrock (Nova 2 Lite)** | Navigator | ~$0.0001/1K input | $200 credits |
 | **Lambda** | Agent execution | Free Tier: 1M req/mo | Free |
 | **API Gateway** | REST API | Free Tier: 1M req/mo | Free |
 | **S3** | directory.json + PDFs | Free Tier: 5GB | Free |
@@ -101,13 +101,15 @@ Clew Directive uses a **serverless, event-driven architecture** on AWS with AI a
 is_live = requests.head(url, timeout=5).status_code < 400
 ```
 
-### Tier 2: Claude 4 Sonnet (Reasoning-Optimized)
+### Tier 2: Amazon Nova 2 Lite (Reasoning — Cost/Availability Optimized)
 **Use Cases**:
 - Navigator: Profile synthesis
 - Navigator: Learning path generation
 
-**Cost**: Strands default pricing (managed by SDK)  
-**Why**: Deep reasoning required, worth the cost
+**Cost**: ~$0.0001/1K input tokens
+**Why**: Pivoted from Claude Sonnet 4.5 mid-build — Nova 2 Lite provides instant
+regional availability without cross-region inference profiles, and keeps
+per-briefing cost well within the $200 credit budget
 
 **Example**:
 ```python

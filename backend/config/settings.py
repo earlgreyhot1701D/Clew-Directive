@@ -18,14 +18,14 @@ class Environment(Enum):
 
 @dataclass(frozen=True)
 class BedrockConfig:
-    """Bedrock model configuration."""
+    """Bedrock configuration.
+
+    NOTE: Model IDs are NOT configured here. Each agent imports its model
+    tier directly from config/models.py (SCOUT_MODEL, NAVIGATOR_MODEL,
+    CURATOR_MODEL). This class only holds the AWS region used to create
+    the Bedrock client.
+    """
     region: str = "us-east-1"
-    scout_model_id: str = "amazon.nova-micro-v1:0"
-    navigator_model_id: str = "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
-    curator_model_id: str = "amazon.nova-micro-v1:0"
-    max_scout_tokens: int = 500
-    max_navigator_tokens: int = 2000
-    max_curator_tokens: int = 500
 
 
 @dataclass(frozen=True)
@@ -66,11 +66,6 @@ def load_settings() -> Settings:
 
     bedrock = BedrockConfig(
         region=os.getenv("AWS_REGION", "us-east-1"),
-        scout_model_id=os.getenv("CD_SCOUT_MODEL", "amazon.nova-micro-v1:0"),
-        navigator_model_id=os.getenv(
-            "CD_NAVIGATOR_MODEL",
-            "global.anthropic.claude-sonnet-4-5-20250929-v1:0",
-        ),
     )
 
     s3 = S3Config(

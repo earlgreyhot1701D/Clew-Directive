@@ -35,7 +35,7 @@ PDF Engine: WeasyPrint (HTML→PDF with clickable links via Jinja2)
 Local Dev: Docker Compose with mocked Bedrock
 
 1.3 AWS Services
-ServicePurposeCostBedrock (Nova Micro)Scout + Curator$200 creditsBedrock (Claude 4 Sonnet)Navigator$200 creditsLambdaAgent executionFree TierAPI GatewayREST APIFree TierS3directory.json + PDFsFree TierEventBridge SchedulerWeekly CuratorFree TierAmplify HostingFrontendFree TierCloudWatchLogs + metricsFree TierAWS BudgetsCost alertsFree
+ServicePurposeCostBedrock (Nova Micro)Scout + Curator$200 creditsBedrock (Nova 2 Lite)Navigator$200 creditsLambdaAgent executionFree TierAPI GatewayREST APIFree TierS3directory.json + PDFsFree TierEventBridge SchedulerWeekly CuratorFree TierAmplify HostingFrontendFree TierCloudWatchLogs + metricsFree TierAWS BudgetsCost alertsFree
 Why NOT Bedrock Knowledge Base: Requires OpenSearch Serverless (~$700/mo) - budget killer
 
 2. The Three Agents
@@ -55,7 +55,7 @@ Output: Array of resource dicts (50-100 resources)
 Error Handling: If URL check fails → include anyway (Curator verified within last week)
 
 2.2 Navigator Agent
-Model: Claude 4 Sonnet (Strands default)
+Model: Amazon Nova 2 Lite (us.amazon.nova-2-lite-v1:0) — chosen over Claude Sonnet 4.5 for instant regional availability and lower cost
 Purpose: Deep reasoning over profile and resources
 Three Tasks:
 Task 1: Profile Synthesis

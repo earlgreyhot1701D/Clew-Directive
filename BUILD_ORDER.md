@@ -244,7 +244,7 @@ assert verify_url("https://broken-url-12345.com/") == False
 
 **Actions**:
 1. Install Strands SDK: `pip install strands-agents-sdk`
-2. Review Strands docs for Claude 4 Sonnet usage
+2. Review Strands docs for Nova 2 Lite usage (originally Claude 4 Sonnet, pivoted for availability)
 3. Initialize Strands client with Bedrock config
 4. Test basic agent call with mock prompt
 
@@ -265,7 +265,7 @@ assert verify_url("https://broken-url-12345.com/") == False
    - Input: Vibe Check responses dict
    - Instructions: Generate 3-4 sentence profile, second person, empathetic
    - Output: String
-2. Call Strands agent with Claude 4 Sonnet
+2. Call Strands agent with Nova 2 Lite (pivoted from Claude 4 Sonnet for regional availability)
 3. Parse and return profile string
 
 **Deliverables**: `synthesize_profile()` complete
@@ -614,7 +614,7 @@ curl -X POST http://localhost:8000/vibe-check \
 3. ✅ Deployed all 3 Lambda functions to AWS
 4. ✅ Fixed API Gateway 404 errors (manual deployment creation)
 5. ✅ Updated Lambda environment variables (S3 path fix)
-6. ✅ Configured Bedrock with Claude Sonnet 4.5 cross-region profile
+6. ✅ Configured Bedrock (originally Claude Sonnet 4.5 cross-region, then pivoted to Nova 2 Lite for instant availability)
 7. ✅ Tested all endpoints - all returning 200 OK
 8. ✅ Fixed PDF generator S3 bucket and path (code committed)
 

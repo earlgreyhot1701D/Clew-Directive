@@ -197,6 +197,19 @@ class Orchestrator:
 
     def start_session(self, vibe_check_responses: dict) -> dict:
         """
+        .. deprecated::
+            **NOT CALLED IN PRODUCTION.** This method was written for the
+            original single-process architecture where a long-lived
+            Orchestrator managed in-memory session state across the full
+            Vibe Check → Feedback → Briefing flow.
+
+            In the Lambda deployment, each HTTP request is handled by a
+            separate Lambda function that calls process_vibe_check(),
+            process_refinement(), or generate_briefing() directly —
+            bypassing start_session() entirely.
+
+            Scheduled for removal in a future cleanup pass.
+
         Phase 1: Process Vibe Check and return profile for feedback.
 
         Args:
@@ -225,6 +238,18 @@ class Orchestrator:
 
     def handle_feedback(self, confirmed: bool, correction: str = "") -> dict:
         """
+        .. deprecated::
+            **NOT CALLED IN PRODUCTION.** This method was written for the
+            original single-process architecture where a long-lived
+            Orchestrator managed in-memory session state (profile, refinement
+            count) across multiple user interactions.
+
+            In the Lambda deployment, the frontend manages flow state and
+            calls process_refinement() or generate_briefing() directly via
+            separate Lambda invocations — bypassing handle_feedback() entirely.
+
+            Scheduled for removal in a future cleanup pass.
+
         Phase 2: Handle "That's me" or "Not quite" feedback.
 
         Args:

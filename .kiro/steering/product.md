@@ -192,7 +192,7 @@ Why this resource:
 **Why It Matters**: Free resources go offline. We catch it automatically.
 
 ### 4. Personalized Reasoning
-**Navigator Agent**: Uses Claude 4 Sonnet for deep reasoning
+**Navigator Agent**: Uses Amazon Nova 2 Lite for reasoning (pivoted from Claude Sonnet 4.5 for regional availability and cost efficiency)
 - Synthesizes profile from Vibe Check (not just keyword matching)
 - Reasons holistically over resources (not just tags)
 - Provides 2-3 sentence "why" for each resource
