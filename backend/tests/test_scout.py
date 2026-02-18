@@ -79,7 +79,8 @@ class TestScoutAgent:
         with pytest.raises(ResourceLoadError) as exc_info:
             scout.gather_resources(domain="ai-foundations", verify_urls=False)
         
-        assert "ai-foundations" in str(exc_info.value.user_message)
+        # User message is generic and doesn't include domain for security
+        assert "resource directory" in str(exc_info.value.user_message).lower()
         assert "S3 connection timeout" in str(exc_info.value.technical_message)
 
     def test_no_resources_found_raises_exception(self):

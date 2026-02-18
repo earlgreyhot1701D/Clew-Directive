@@ -4,11 +4,17 @@
 FROM public.ecr.aws/lambda/python:3.12
 
 # Install system libraries required by WeasyPrint
+# WeasyPrint requires at least one system font. Without this, Pango will segfault or produce empty PDFs.
+# fontconfig provides font configuration library
+# dejavu-sans-fonts provides actual font files (DejaVu Sans family)
+# Both are required: fontconfig for configuration + dejavu-sans-fonts for actual font files
 RUN microdnf install -y \
     cairo \
     pango \
     gdk-pixbuf2 \
     libffi-devel \
+    fontconfig \
+    dejavu-sans-fonts \
     && microdnf clean all
 
 # Copy requirements and install dependencies

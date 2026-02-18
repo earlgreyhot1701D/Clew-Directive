@@ -385,6 +385,7 @@ class TestS3Upload:
             assert call_args[0][0] == "get_object"
             assert call_args[1]["ExpiresIn"] == 86400  # 24 hours in seconds
 
+    @pytest.mark.skipif(not WEASYPRINT_AVAILABLE, reason="WeasyPrint not available (requires GTK libraries)")
     def test_generate_command_briefing_uploads_to_s3_in_prod(self, monkeypatch):
         """Test that generate_command_briefing uploads to S3 in production."""
         from backend.tools.pdf_generator import generate_command_briefing

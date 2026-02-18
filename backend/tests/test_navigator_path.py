@@ -174,9 +174,8 @@ def test_generate_learning_path_invalid_json_fallback(navigator):
     mock_response = Mock()
     mock_response.output = "This is not valid JSON at all!"
     
-    with patch.object(navigator.agent, 'invoke_async', new_callable=AsyncMock) as mock_invoke:
-        mock_invoke.return_value = mock_response
-        
+    # Mock the agent __call__ method (used by ThreadPoolExecutor)
+    with patch.object(navigator.agent, '__call__', return_value=mock_response):
         path = navigator.generate_learning_path(profile, MOCK_VERIFIED_RESOURCES)
         
         # Should use fallback
@@ -189,9 +188,8 @@ def test_generate_learning_path_exception_fallback(navigator):
     """Test fallback when Strands call raises exception."""
     profile = "You're curious about AI."
     
-    with patch.object(navigator.agent, 'invoke_async', new_callable=AsyncMock) as mock_invoke:
-        mock_invoke.side_effect = Exception("Bedrock timeout")
-        
+    # Mock the agent __call__ method to raise exception
+    with patch.object(navigator.agent, '__call__', side_effect=Exception("Bedrock timeout")):
         path = navigator.generate_learning_path(profile, MOCK_VERIFIED_RESOURCES)
         
         # Should use fallback

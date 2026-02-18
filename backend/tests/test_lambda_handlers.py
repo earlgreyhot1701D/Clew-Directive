@@ -128,7 +128,8 @@ class TestVibeCheckHandler:
 
         assert "headers" in response
         assert "Access-Control-Allow-Origin" in response["headers"]
-        assert response["headers"]["Access-Control-Allow-Origin"] == "*"
+        # Should return empty string for non-whitelisted origin (no origin header in test)
+        assert response["headers"]["Access-Control-Allow-Origin"] == ""
 
     def test_vibe_check_invalid_json(self):
         """Invalid JSON should return 400."""
@@ -233,7 +234,8 @@ class TestRefineProfileHandler:
 
         assert "headers" in response
         assert "Access-Control-Allow-Origin" in response["headers"]
-        assert response["headers"]["Access-Control-Allow-Origin"] == "*"
+        # Should return empty string for non-whitelisted origin (no origin header in test)
+        assert response["headers"]["Access-Control-Allow-Origin"] == ""
 
 
 class TestGenerateBriefingHandler:
@@ -309,13 +311,16 @@ class TestGenerateBriefingHandler:
 
     @patch("backend.lambda_generate_briefing.Orchestrator")
     def test_generate_briefing_scout_error(self, mock_orchestrator_class):
-        """Scout error should return 500."""
-        # Mock orchestrator to return error
+        """Scout error should return 503 with user-friendly message."""
+        # Mock orchestrator to raise ClewException
+        from exceptions import ClewException
         mock_orchestrator = MagicMock()
-        mock_orchestrator.generate_briefing.return_value = {
-            "error": "scout_failed",
-            "message": "Failed to load resources",
-        }
+        mock_orchestrator.generate_briefing.side_effect = ClewException(
+            user_message="We're having trouble loading our resource directory.",
+            technical_message="Scout failed",
+            retry_allowed=True,
+            http_status=503,
+        )
         mock_orchestrator_class.return_value = mock_orchestrator
 
         event = self._make_event({
@@ -324,9 +329,10 @@ class TestGenerateBriefingHandler:
 
         response = generate_briefing_handler(event, None)
 
-        assert response["statusCode"] == 500
+        assert response["statusCode"] == 503
         body = json.loads(response["body"])
         assert "error" in body
+        assert "resource directory" in body["error"].lower()
 
     @patch("backend.lambda_generate_briefing.generate_command_briefing")
     @patch("backend.lambda_generate_briefing.Orchestrator")
@@ -354,7 +360,7 @@ class TestGenerateBriefingHandler:
         body = json.loads(response["body"])
         assert "learning_path" in body
         assert body["pdf_url"] is None
-        assert "pdf_error" in body
+        assert "pdf_warning" in body
 
     @patch("backend.lambda_generate_briefing.generate_command_briefing")
     @patch("backend.lambda_generate_briefing.Orchestrator")
@@ -376,4 +382,5 @@ class TestGenerateBriefingHandler:
 
         assert "headers" in response
         assert "Access-Control-Allow-Origin" in response["headers"]
-        assert response["headers"]["Access-Control-Allow-Origin"] == "*"
+        # Should return empty string for non-whitelisted origin (no origin header in test)
+        assert response["headers"]["Access-Control-Allow-Origin"] == ""

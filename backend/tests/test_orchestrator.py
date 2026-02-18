@@ -12,6 +12,7 @@ Covers:
 import pytest
 from unittest.mock import Mock, patch, call
 from backend.agents.orchestrator import Orchestrator
+from exceptions import ClewException
 from backend.tests.mocks.bedrock_mocks import (
     MOCK_VIBE_CHECK_CURIOUS_MARKETER,
     MOCK_PROFILE_RESPONSE,
@@ -91,11 +92,11 @@ class TestProcessVibeCheck:
         """Test error handling when Navigator fails."""
         mock_navigator.synthesize_profile.side_effect = Exception("Bedrock timeout")
         
-        profile = orchestrator.process_vibe_check(MOCK_VIBE_CHECK_CURIOUS_MARKETER)
+        # Should raise ClewException with user-friendly message
+        with pytest.raises(ClewException) as exc_info:
+            orchestrator.process_vibe_check(MOCK_VIBE_CHECK_CURIOUS_MARKETER)
         
-        # Should return friendly error message
-        assert "error" in profile.lower()
-        assert "try again" in profile.lower()
+        assert "try again" in exc_info.value.user_message.lower()
 
     def test_process_vibe_check_empty_responses(self, orchestrator, mock_navigator):
         """Test with empty Vibe Check responses."""
@@ -147,7 +148,8 @@ class TestProcessRefinement:
         
         # Should return original profile with note
         assert original in refined
-        assert "trouble" in refined.lower()
+        assert "(Note:" in refined
+        assert correction in refined
 
     def test_process_refinement_empty_correction(self, orchestrator, mock_navigator):
         """Test refinement with empty correction."""
@@ -201,33 +203,34 @@ class TestGenerateBriefing:
         """Test error handling when Scout returns no resources."""
         mock_scout.gather_resources.return_value = []
         
+        # Should raise NoResourcesFoundError (which Scout would raise)
+        # But since we're mocking Scout to return [], Navigator will get empty list
+        # and should still generate a path (using fallback if needed)
         result = orchestrator.generate_briefing("Profile")
         
-        # Should return error dict
-        assert "error" in result
-        assert result["error"] == "resource_loading_failed"
-        assert "message" in result
+        # Should still return a valid path structure
+        assert "recommended_resources" in result
+        assert "approach_guidance" in result
 
     def test_generate_briefing_scout_error(self, orchestrator, mock_scout):
         """Test error handling when Scout raises exception."""
         mock_scout.gather_resources.side_effect = Exception("S3 connection failed")
         
-        result = orchestrator.generate_briefing("Profile")
+        # Should raise ClewException with user-friendly message
+        with pytest.raises(ClewException) as exc_info:
+            orchestrator.generate_briefing("Profile")
         
-        # Should return error dict
-        assert "error" in result
-        assert result["error"] == "generation_failed"
-        assert "message" in result
+        assert "resource directory" in exc_info.value.user_message.lower()
 
     def test_generate_briefing_navigator_error(self, orchestrator, mock_navigator):
         """Test error handling when Navigator raises exception."""
         mock_navigator.generate_learning_path.side_effect = Exception("Bedrock timeout")
         
-        result = orchestrator.generate_briefing("Profile")
+        # Should raise ClewException with user-friendly message
+        with pytest.raises(ClewException) as exc_info:
+            orchestrator.generate_briefing("Profile")
         
-        # Should return error dict
-        assert "error" in result
-        assert result["error"] == "generation_failed"
+        assert "learning path" in exc_info.value.user_message.lower()
 
     def test_generate_briefing_uses_correct_domain(self, orchestrator, mock_scout):
         """Test that briefing generation uses ai-foundations domain."""

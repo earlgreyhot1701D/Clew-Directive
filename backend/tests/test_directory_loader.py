@@ -266,9 +266,9 @@ class TestLoadDirectoryFactory:
         mock_file_loader.assert_called_once()
         assert data == GOLDEN_DIRECTORY
 
-    @patch("backend.config.settings.load_settings")
     @patch("backend.tools.directory_loader.load_directory_from_s3")
-    def test_factory_uses_s3_in_staging(self, mock_s3_loader, mock_settings):
+    @patch("config.settings.load_settings")
+    def test_factory_uses_s3_in_staging(self, mock_settings, mock_s3_loader):
         """Test factory uses S3 loader in staging environment."""
         # Mock staging environment
         mock_env = Mock()
@@ -284,9 +284,9 @@ class TestLoadDirectoryFactory:
         mock_s3_loader.assert_called_once_with("staging-bucket", "directory.json")
         assert data == GOLDEN_DIRECTORY
 
-    @patch("backend.config.settings.load_settings")
     @patch("backend.tools.directory_loader.load_directory_from_s3")
-    def test_factory_uses_s3_in_production(self, mock_s3_loader, mock_settings):
+    @patch("config.settings.load_settings")
+    def test_factory_uses_s3_in_production(self, mock_settings, mock_s3_loader):
         """Test factory uses S3 loader in production environment."""
         # Mock production environment
         mock_env = Mock()

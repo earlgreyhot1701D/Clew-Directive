@@ -18,6 +18,7 @@ import json
 import logging
 import re
 from typing import Any
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
 
 from strands import Agent
 from config.models import NAVIGATOR_MODEL
@@ -187,12 +188,13 @@ Requirements:
 Generate the profile summary:"""
 
         try:
-            # Call Strands agent with timeout
-            response = asyncio.wait_for(
-                self.agent.invoke_async(prompt),
-                timeout=BEDROCK_TIMEOUT
-            )
-            response = asyncio.run(response)
+            # Uses ThreadPoolExecutor instead of asyncio.run() to avoid RuntimeError if an event loop is already running (Strands SDK issue)
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                future = pool.submit(self.agent, prompt)
+                try:
+                    response = future.result(timeout=BEDROCK_TIMEOUT)
+                except FuturesTimeout:
+                    raise BedrockTimeoutError("profile_synthesis", BEDROCK_TIMEOUT)
             
             # Extract text from response
             if hasattr(response, 'output'):
@@ -272,12 +274,13 @@ update the existing profile based on what they said.
 Revised profile:"""
 
         try:
-            # Call Strands agent with timeout
-            response = asyncio.wait_for(
-                self.agent.invoke_async(prompt),
-                timeout=BEDROCK_TIMEOUT
-            )
-            response = asyncio.run(response)
+            # Uses ThreadPoolExecutor instead of asyncio.run() to avoid RuntimeError if an event loop is already running (Strands SDK issue)
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                future = pool.submit(self.agent, prompt)
+                try:
+                    response = future.result(timeout=BEDROCK_TIMEOUT)
+                except FuturesTimeout:
+                    raise BedrockTimeoutError("profile_refinement", BEDROCK_TIMEOUT)
             
             # Extract text from response
             if hasattr(response, 'output'):
@@ -424,12 +427,13 @@ OUTPUT FORMAT (JSON):
 Generate the learning path JSON now:"""
 
         try:
-            # Call Strands agent with timeout
-            response = asyncio.wait_for(
-                self.agent.invoke_async(prompt),
-                timeout=BEDROCK_TIMEOUT * 2  # Path generation takes longer
-            )
-            response = asyncio.run(response)
+            # Uses ThreadPoolExecutor instead of asyncio.run() to avoid RuntimeError if an event loop is already running (Strands SDK issue)
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                future = pool.submit(self.agent, prompt)
+                try:
+                    response = future.result(timeout=BEDROCK_TIMEOUT * 2)
+                except FuturesTimeout:
+                    raise BedrockTimeoutError("path_generation", BEDROCK_TIMEOUT * 2)
             
             # Extract text from response
             if hasattr(response, 'output'):
