@@ -1,5 +1,5 @@
 """
-Navigator Agent — Reasoning and path generation using Claude 4 Sonnet.
+Navigator Agent — Reasoning and path generation using Amazon Nova 2 Lite.
 
 Responsibilities:
     - Analyze Vibe Check responses to generate a learner profile summary
@@ -7,8 +7,10 @@ Responsibilities:
     - Generate reasoning for why each resource was selected
     - Produce structured output for the Command Briefing PDF
 
-Uses Claude 4 Sonnet (Strands default) for deep reasoning.
-This is the expensive model — every call counts.
+Uses Amazon Nova 2 Lite (us.amazon.nova-2-lite-v1:0). Originally planned for
+Claude Sonnet 4.5, but pivoted mid-build to Nova 2 Lite because it is instantly
+available in all AWS regions without cross-region inference profiles, and its
+lower token cost keeps per-briefing spend well within the $200 credit budget.
 """
 
 import asyncio
@@ -124,7 +126,8 @@ class NavigatorAgent:
     Navigator agent: reasons over user profile and curated resources
     to generate a personalized learning path.
 
-    The Navigator is the only agent that uses Claude 4 Sonnet.
+    The Navigator is the only agent that uses Amazon Nova 2 Lite
+    (chosen over Claude Sonnet 4.5 for regional availability and cost).
     It handles two key tasks:
         1. Profile synthesis — turning Vibe Check answers into a narrative
         2. Path generation — matching the profile to sequenced resources

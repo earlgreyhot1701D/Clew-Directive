@@ -1,7 +1,7 @@
 """
 Mock Bedrock responses for testing.
 
-These mocks simulate Nova Micro (Scout) and Claude 4 Sonnet (Navigator)
+These mocks simulate Nova Micro (Scout) and Nova 2 Lite (Navigator)
 responses without calling real AWS services.
 
 Usage:
