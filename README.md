@@ -6,9 +6,15 @@ Clew Directive is a free, open-source, stateless AI tool that generates personal
 
 No accounts. No tracking. No paywalls. Your briefing is yours.
 
+**Privacy by Design**:
+- Sessions are stateless — no database, no user accounts, no tracking pixels
+- PDFs are stored temporarily in S3 (auto-deleted after 24 hours)
+- Lambda execution logs are retained for 7 days then auto-deleted
+- No personally identifiable information is collected
+
 **🚀 Live Demo**: [https://clewdirective.com](https://clewdirective.com)
 
-**Status**: ✅ Deployed to AWS | ✅ AI Personalization Active | ✅ WCAG 2.1 AAA Compliant
+**Status**: ✅ Deployed to AWS | ✅ AI Personalization Active | ✅ WCAG 2.1 AAA contrast ratios (13.24:1)
 
 ---
 
@@ -29,7 +35,7 @@ Vibe Check (4 questions)
      ↓
 Navigator synthesizes profile → "Does this sound like you?"
      ↓                               ↓
-[That's me ✓]                  [Not quite ✗] → correction → re-generate (1 max)
+[That's me ✓]                  [Not quite ✗] → correction → re-generate
      ↓
 Scout verifies resources (live URL checks)
      ↓
@@ -37,8 +43,10 @@ Navigator generates personalized learning path
      ↓
 UI displays results with live links + PDF download
      ↓
-Session purged — no data stored
+Session ends — PDFs auto-delete after 24h, logs expire after 7 days
 ```
+
+The interface guides users through one profile refinement. Users confirm their profile before proceeding to plan generation.
 
 ---
 
@@ -191,7 +199,7 @@ This demonstrates genuine AI reasoning, not keyword matching or collaborative fi
 | PDF generation | WeasyPrint | HTML→PDF with clickable links; preserves terminal aesthetic |
 | Frontend | Next.js on Amplify | Live URL for voting period; Free Tier hosting |
 | IaC | TypeScript CDK | All infrastructure defined in code |
-| Accessibility | WCAG 2.1 AAA | Social good tool must be accessible to all (13.24:1 contrast) |
+| Accessibility | WCAG 2.1 AAA contrast ratios (13.24:1) | Social good tool must be accessible to all |
 | Lambda scaling | Automatic (unreserved) | Scales to account limits; avoids new account issues |
 
 ### Cost (Voting Period Estimate)
@@ -217,6 +225,8 @@ Every resource in `directory.json` passes a **5-gate quality standard**:
 3. **Current**: Created or updated within 18 months
 4. **Pedagogically sound**: Structured progression with exercises
 5. **Accessible**: No prerequisites to purchase, globally available, self-paced
+
+Resources are hand-curated against these standards. The directory is reviewed and updated regularly.
 
 Current directory: **23 resources** from Helsinki, Stanford, MIT, Harvard, Google, AWS, Microsoft, NVIDIA, DeepLearning.AI, Hugging Face, and IBM.
 
@@ -406,9 +416,9 @@ docker-compose up
 The live site is deployed on AWS Amplify with:
 - ✅ Real AI personalization (Amazon Nova 2 Lite)
 - ✅ PDF generation with clickable links
-- ✅ WCAG 2.1 AAA accessibility (13.24:1 contrast)
+- ✅ WCAG 2.1 AAA contrast ratios (13.24:1)
 - ✅ Progressive loading states
-- ✅ No tracking, no accounts, no data storage
+- ✅ Stateless sessions (PDFs auto-delete after 24h, logs expire after 7 days)
 
 ### Run Tests
 ```bash

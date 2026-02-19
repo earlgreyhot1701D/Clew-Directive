@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as logs from 'aws-cdk-lib/aws-logs';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -44,6 +45,8 @@ export class ApiStack extends cdk.Stack {
       memorySize: 512,
       timeout: cdk.Duration.seconds(30),
       description: 'Process Vibe Check responses and return profile summary',
+      // 7-day retention: logs may contain session content (profiles, Vibe Check answers). Auto-expire to support privacy-by-design claim.
+      logRetention: logs.RetentionDays.ONE_WEEK,
       environment: {
         CD_ENVIRONMENT: 'prod',
         CD_S3_BUCKET: props.dataBucket.bucketName,
@@ -60,6 +63,8 @@ export class ApiStack extends cdk.Stack {
       memorySize: 512,
       timeout: cdk.Duration.seconds(30),
       description: 'Refine profile based on user correction',
+      // 7-day retention: logs may contain session content (profiles, Vibe Check answers). Auto-expire to support privacy-by-design claim.
+      logRetention: logs.RetentionDays.ONE_WEEK,
       environment: {
         CD_ENVIRONMENT: 'prod',
         CD_S3_BUCKET: props.dataBucket.bucketName,
@@ -76,6 +81,8 @@ export class ApiStack extends cdk.Stack {
       memorySize: 512,
       timeout: cdk.Duration.seconds(90), // Longer timeout for Scout + Navigator + PDF
       description: 'Generate learning path and Command Briefing PDF',
+      // 7-day retention: logs may contain session content (profiles, Vibe Check answers). Auto-expire to support privacy-by-design claim.
+      logRetention: logs.RetentionDays.ONE_WEEK,
       environment: {
         CD_ENVIRONMENT: 'prod',
         CD_S3_BUCKET: props.dataBucket.bucketName,
