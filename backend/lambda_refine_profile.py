@@ -96,7 +96,9 @@ def lambda_handler(event, context):
         directory_data = load_directory()
         knowledge = create_knowledge(directory_data)
         
-        scout = ScoutAgent(knowledge=knowledge)
+        # Scout without resource_verifier — trusts Curator's weekly verification
+        # User requests should NOT perform runtime URL checks (would cause timeout)
+        scout = ScoutAgent(knowledge=knowledge)  # resource_verifier=None by default
         navigator = NavigatorAgent()
         orchestrator = Orchestrator(scout=scout, navigator=navigator)
         revised_profile = orchestrator.process_refinement(original_profile, user_correction)

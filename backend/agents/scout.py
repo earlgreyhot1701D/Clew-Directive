@@ -41,14 +41,18 @@ class ScoutAgent:
     def gather_resources(
         self,
         domain: str = "ai-foundations",
-        verify_urls: bool = True,
+        verify_urls: bool = False,
     ) -> list[dict]:
         """
         Load and verify resources for the given domain.
 
         Args:
             domain: Knowledge domain to load resources for.
-            verify_urls: If True, perform runtime HTTP HEAD checks.
+            verify_urls: If True AND resource_verifier is provided, perform runtime HTTP HEAD checks.
+                         WARNING: With 23 resources and 5s timeout + 2 retries, worst-case is 345s.
+                         Only enable for Curator runs with generous Lambda timeout (300s+).
+                         User-facing requests should use verify_urls=False (default).
+                         Production: Scout trusts Curator's weekly verification.
 
         Returns:
             List of verified, active resource dicts.
