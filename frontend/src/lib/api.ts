@@ -127,13 +127,15 @@ export async function submitVibeCheck(
  */
 export async function refineProfile(
   originalProfile: string,
-  userCorrection: string
+  userCorrection: string,
+  refinementCount: number = 0
 ): Promise<RefineProfileResponse> {
   return apiRequest<RefineProfileResponse>('/refine-profile', {
     method: 'POST',
     body: JSON.stringify({
       original_profile: originalProfile,
       user_correction: userCorrection,
+      refinement_count: refinementCount,
     }),
   });
 }

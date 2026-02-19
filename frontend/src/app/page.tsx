@@ -30,6 +30,7 @@ export default function Home() {
   const [profile, setProfile] = useState<string | null>(null);
   const [showRefinement, setShowRefinement] = useState(false);
   const [userCorrection, setUserCorrection] = useState('');
+  const [refinementCount, setRefinementCount] = useState(0);
   const [isGeneratingProfile, setIsGeneratingProfile] = useState(false);
   const [isGeneratingBriefing, setIsGeneratingBriefing] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
@@ -218,9 +219,10 @@ export default function Home() {
     setShowRefinement(false);
     
     try {
-      const response = await refineProfile(profile, userCorrection);
+      const response = await refineProfile(profile, userCorrection, refinementCount);
       setProfile(response.profile);
       setUserCorrection('');
+      setRefinementCount(prev => prev + 1); // Increment after successful refinement
       
       // Scroll to updated profile
       setTimeout(() => {
@@ -529,6 +531,7 @@ export default function Home() {
                     setBriefing(null);
                     setShowRefinement(false);
                     setUserCorrection('');
+                    setRefinementCount(0);
                     setCurrentQuestion(0);
                     setEditingQuestion(null);
                     setIsGeneratingProfile(false);
@@ -710,12 +713,23 @@ export default function Home() {
                       >
                         Yes, Show Me My Plan
                       </button>
-                      <button
-                        onClick={() => setShowRefinement(true)}
-                        className="terminal-button"
-                      >
-                        Not Quite
-                      </button>
+                      {refinementCount < 1 ? (
+                        <button
+                          onClick={() => setShowRefinement(true)}
+                          className="terminal-button"
+                        >
+                          Not Quite
+                        </button>
+                      ) : (
+                        <div style={{
+                          padding: '0.85rem 1.75rem',
+                          color: 'var(--text-dim)',
+                          fontSize: '0.9rem',
+                          fontStyle: 'italic'
+                        }}>
+                          One refinement included — ready to build your plan
+                        </div>
+                      )}
                     </div>
                   </>
                 ) : (

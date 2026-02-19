@@ -237,6 +237,43 @@ class TestRefineProfileHandler:
         # Should return empty string for non-whitelisted origin (no origin header in test)
         assert response["headers"]["Access-Control-Allow-Origin"] == ""
 
+    def test_refine_limit_enforcement(self):
+        """Refinement count >= 1 should return 400 with clear message."""
+        event = self._make_event({
+            "original_profile": "You're approaching AI...",
+            "user_correction": "I'm more hands-on",
+            "refinement_count": 1,
+        })
+
+        response = refine_profile_handler(event, None)
+
+        assert response["statusCode"] == 400
+        body = json.loads(response["body"])
+        assert "error" in body
+        assert "already been refined" in body["error"]
+        assert "proceed to generate" in body["error"]
+
+    @patch("backend.lambda_refine_profile.Orchestrator")
+    def test_refine_backward_compatibility(self, mock_orchestrator_class):
+        """Missing refinement_count should default to 0 and allow refinement."""
+        # Mock orchestrator
+        mock_orchestrator = MagicMock()
+        mock_orchestrator.process_refinement.return_value = "Revised profile"
+        mock_orchestrator_class.return_value = mock_orchestrator
+
+        # Event without refinement_count (backward compatibility)
+        event = self._make_event({
+            "original_profile": "Original profile",
+            "user_correction": "Correction",
+        })
+
+        response = refine_profile_handler(event, None)
+
+        # Should succeed (defaults to 0)
+        assert response["statusCode"] == 200
+        body = json.loads(response["body"])
+        assert "profile" in body
+
 
 class TestGenerateBriefingHandler:
     """Test suite for lambda_generate_briefing.py"""

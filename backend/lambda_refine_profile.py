@@ -7,7 +7,8 @@ Purpose: Refine profile based on user correction
 Input:
     {
         "original_profile": "You're approaching AI...",
-        "user_correction": "Actually I'm more hands-on..."
+        "user_correction": "Actually I'm more hands-on...",
+        "refinement_count": 0  # Optional, defaults to 0 for backward compatibility
     }
 
 Output:
@@ -71,6 +72,16 @@ def lambda_handler(event, context):
         # Validate user_correction present and non-empty
         if not user_correction or not user_correction.strip():
             raise ValidationError("user_correction", "Cannot be empty")
+
+        # Extract refinement count (defaults to 0 for backward compatibility)
+        refinement_count = body.get("refinement_count", 0)
+
+        # Enforce one-refinement limit
+        if refinement_count >= 1:
+            raise ValidationError(
+                "refinement_count",
+                "Profile has already been refined. Please proceed to generate your learning plan."
+            )
 
         # Process refinement
         logger.info("[lambda:refine_profile] Processing profile refinement")
