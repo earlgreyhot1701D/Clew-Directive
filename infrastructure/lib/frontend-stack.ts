@@ -53,6 +53,24 @@ export class FrontendStack extends cdk.Stack {
       // Build spec is defined in amplify.yml in the repository root
     });
 
+    /**
+     * MANUAL CONFIGURATION REQUIRED AFTER FRESH DEPLOY
+     * 
+     * The custom domain clewdirective.com is NOT provisioned by CDK.
+     * After deploying this stack, manually configure in Amplify Console:
+     * 
+     * 1. Go to Amplify Console → App → Domain management
+     * 2. Add domain: clewdirective.com
+     * 3. Amplify will provision ACM certificate automatically
+     * 4. Add CNAME records to Route 53 hosted zone when prompted
+     * 5. Add www subdomain redirect if desired
+     * 
+     * Route 53 hosted zone: Z04341892TS5LCS9E2DAF
+     * ACM Certificate: provisioned by Amplify Console in us-east-1
+     * 
+     * TODO: Move this to CDK using amplify.Domain after competition deadline
+     */
+
     // Add main branch
     const mainBranch = amplifyApp.addBranch('main', {
       branchName: 'main',

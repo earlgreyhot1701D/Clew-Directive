@@ -116,9 +116,10 @@ export class ApiStack extends cdk.Stack {
     props.dataBucket.grantWrite(generateBriefingFn, 'tmp/briefings/*');
 
     // Allowed CORS origins — restrict to custom domain and local dev
+    // NOTE: clewdirective.com was manually configured in Amplify Console (not in CDK)
     const allowedOrigins = [
-      'https://clewdirective.com',           // Custom domain
-      'https://www.clewdirective.com',       // www subdomain
+      'https://clewdirective.com',           // Custom domain (manual Amplify config)
+      'https://www.clewdirective.com',       // www subdomain (manual Amplify config)
       'https://main.d1rbee1a32avsq.amplifyapp.com', // Amplify default (backup)
       'http://localhost:3000',                       // Local development
     ];
