@@ -35,9 +35,12 @@ SCOUT_MODEL = ModelTier(
 
 # Navigator: capable, reasoning-heavy, generates personalized paths
 # Using Amazon Nova 2 Lite with regional prefix for instant availability
+# Increased from 2000 to 4000 — 28 resources + profile + JSON schema requires
+# more output tokens to complete personalized path generation without hitting
+# MaxTokensReachedException. Nova 2 Lite supports up to 5000.
 NAVIGATOR_MODEL = ModelTier(
     model_id="us.amazon.nova-2-lite-v1:0",
-    max_tokens=2000,
+    max_tokens=4000,
     temperature=0.7,
     description="Profile analysis, path reasoning, briefing generation",
 )

@@ -21,6 +21,7 @@ from typing import Any
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
 
 from strands import Agent
+from strands.types.exceptions import MaxTokensReachedException
 from config.models import NAVIGATOR_MODEL
 from exceptions import (
     BedrockTimeoutError,
@@ -139,8 +140,10 @@ class NavigatorAgent:
         self.bedrock_client = bedrock_client
         
         # Initialize Strands agent for profile synthesis
+        # Disable tools to prevent agent loop from consuming tokens
         self.agent = Agent(
             model=self.model.model_id,
+            tools=[],  # No tools needed for text generation
             system_prompt="""You are an empathetic AI learning advisor. Your role is to understand 
             learners' backgrounds and goals, then guide them to the right resources. You communicate 
             in a warm, supportive tone using second person ("you"). You're knowledgeable but never 
@@ -485,6 +488,41 @@ Generate the learning path JSON now:"""
         except InvalidLLMResponseError:
             # Re-raise our custom exceptions
             raise
+        
+        except MaxTokensReachedException as e:
+            # The model successfully generated output, but the agent loop hit max_tokens
+            # This happens with 28 resources because the prompt + response is large
+            # The output is in the exception's state - extract it
+            logger.warning("[agent:navigator] Agent loop hit max_tokens, but model generated valid output")
+            
+            # Try to extract the output from the exception
+            try:
+                # The exception contains the agent state with the last message
+                if hasattr(e, 'state') and hasattr(e.state, 'messages') and e.state.messages:
+                    last_message = e.state.messages[-1]
+                    if hasattr(last_message, 'content'):
+                        response_text = str(last_message.content).strip()
+                    else:
+                        response_text = str(last_message).strip()
+                    
+                    # Parse JSON from response
+                    if "```json" in response_text:
+                        response_text = response_text.split("```json")[1].split("```")[0].strip()
+                    elif "```" in response_text:
+                        response_text = response_text.split("```")[1].split("```")[0].strip()
+                    
+                    path_data = json.loads(response_text)
+                    path_data["profile_summary"] = fix_capitalization(profile_summary)
+                    
+                    if self._validate_learning_path(path_data):
+                        logger.info("[agent:navigator] Successfully extracted path from max_tokens exception")
+                        return path_data
+            except Exception as extract_error:
+                logger.warning("[agent:navigator] Could not extract output from max_tokens exception: %s", extract_error)
+            
+            # If extraction failed, use fallback
+            logger.warning("[agent:navigator] Using fallback after max_tokens exception")
+            return self._fallback_learning_path(profile_summary, verified_resources)
             
         except Exception as e:
             error_str = str(e).lower()
