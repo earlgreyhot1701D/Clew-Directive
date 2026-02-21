@@ -12,5 +12,8 @@ strands-agents-tools>=0.2.20,<1.0.0
 boto3>=1.35.0,<2.0.0
 
 # PDF Generation
-weasyprint>=62.0,<63.0
+# WeasyPrint 63+ required for compatibility with pydyf 0.11+
+# pydyf 0.12+ removed the transform() method, breaking WeasyPrint 62.x
+# WeasyPrint 63.0 was updated to handle pydyf API changes
+weasyprint>=63.0,<64.0
 jinja2>=3.1.0
