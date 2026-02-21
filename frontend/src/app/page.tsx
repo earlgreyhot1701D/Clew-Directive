@@ -752,12 +752,24 @@ export default function Home() {
                         marginBottom: '1rem'
                       }}
                     />
-                    <button
-                      onClick={handleRefineProfile}
-                      className="terminal-button"
-                    >
-                      Update My Profile
-                    </button>
+                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                      <button
+                        onClick={handleRefineProfile}
+                        className="terminal-button"
+                        disabled={!userCorrection.trim()}
+                      >
+                        Update My Profile
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowRefinement(false);
+                          setUserCorrection('');
+                        }}
+                        className="ghost-btn"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
                 )}
               </section>
