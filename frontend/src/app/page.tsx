@@ -1082,7 +1082,8 @@ export default function Home() {
 
         {/* About Modal */}
         {showAboutModal && (
-          <div
+          <button
+            type="button"
             style={{
               position: 'fixed',
               top: 0,
@@ -1094,7 +1095,9 @@ export default function Home() {
               alignItems: 'center',
               justifyContent: 'center',
               zIndex: 1000,
-              padding: '1rem'
+              padding: '1rem',
+              border: 'none',
+              cursor: 'default'
             }}
             onClick={() => setShowAboutModal(false)}
             role="dialog"
@@ -1192,7 +1195,7 @@ export default function Home() {
                 Close
               </button>
             </div>
-          </div>
+          </button>
         )}
       </div>
     </main>

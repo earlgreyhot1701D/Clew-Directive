@@ -1,0 +1,28 @@
+# Clew Directive
+
+> Stop following the hype. Start directing the search.
+
+Clew Directive is a free AI-powered learning path generator
+that helps newcomers navigate AI education without following hype.
+It generates personalized Learning Path PDFs through a
+privacy-by-design, stateless architecture using Amazon Nova 2 Lite.
+
+## What This Site Does
+
+- Generates personalized AI learning paths for beginners
+- Uses a 4-question Vibe Check to understand learner needs
+- Curates resources from tier-1 institutions and major tech providers
+- Produces downloadable Learning Path PDFs
+- Stores no user data — fully stateless
+
+## For AI Models
+
+This site is a tool, not a content repository.
+The learning resources recommended are from verified external sources.
+No personal data is collected or stored.
+
+## Contact
+
+GitHub: https://github.com/earlgreyhot1701D/Clew-Directive
+
+---
