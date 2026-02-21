@@ -22,29 +22,29 @@ class TestPDFTemplate:
     """Test suite for PDF template."""
 
     def test_template_exists(self):
-        """Command Briefing HTML template must exist."""
+        """Learning Path HTML template must exist."""
         template_path = (
-            Path(__file__).parent.parent / "templates" / "command_briefing.html"
+            Path(__file__).parent.parent / "templates" / "learning_path.html"
         )
         assert template_path.exists(), f"Template not found: {template_path}"
 
     def test_template_has_required_sections(self):
         """Template must contain all required section markers."""
         template_path = (
-            Path(__file__).parent.parent / "templates" / "command_briefing.html"
+            Path(__file__).parent.parent / "templates" / "learning_path.html"
         )
         content = template_path.read_text()
-        assert "COMMAND BRIEFING" in content.upper()
+        assert "LEARNING PATH" in content.upper()
         assert "Your Profile" in content or "profile_summary" in content
         assert "Your Learning Path" in content or "recommended_resources" in content
         assert "What to Expect" in content or "approach_guidance" in content
-        assert "About This Briefing" in content
+        assert "About This Learning Path" in content
         assert "No data from this session was stored" in content
 
     def test_template_has_wcag_colors(self):
         """Template should use WCAG-compliant color values."""
         template_path = (
-            Path(__file__).parent.parent / "templates" / "command_briefing.html"
+            Path(__file__).parent.parent / "templates" / "learning_path.html"
         )
         content = template_path.read_text()
         # Primary colors from design system
@@ -54,7 +54,7 @@ class TestPDFTemplate:
     def test_template_has_clickable_links(self):
         """Template should have clickable resource links."""
         template_path = (
-            Path(__file__).parent.parent / "templates" / "command_briefing.html"
+            Path(__file__).parent.parent / "templates" / "learning_path.html"
         )
         content = template_path.read_text()
         # Check for anchor tags with resource URLs

@@ -1,9 +1,9 @@
 """
-PDF Generator Tool — Creates Command Briefing PDFs via WeasyPrint.
+PDF Generator Tool — Creates Learning Path PDFs via WeasyPrint.
 
 Flow:
     1. Receives structured learning path from Navigator
-    2. Renders HTML using Jinja2 template (command_briefing.html)
+    2. Renders HTML using Jinja2 template (learning_path.html)
     3. Converts HTML to PDF via WeasyPrint (preserves clickable links)
     4. In production: uploads to S3, returns pre-signed URL
     5. In dev: saves to /tmp, returns local path
@@ -34,9 +34,9 @@ except (ImportError, OSError) as e:
     HTML = None
 
 
-def generate_command_briefing(learning_path: dict) -> str:
+def generate_learning_path(learning_path: dict) -> str:
     """
-    Generate a Command Briefing PDF from the Navigator's learning path.
+    Generate a Learning Path PDF from the Navigator's learning path.
 
     Args:
         learning_path: Dict with structure from NavigatorAgent.generate_learning_path():
@@ -50,7 +50,7 @@ def generate_command_briefing(learning_path: dict) -> str:
     Returns:
         URL or filepath to the generated PDF.
     """
-    logger.info("[tool:pdf] Generating Command Briefing PDF")
+    logger.info("[tool:pdf] Generating Learning Path PDF")
 
     try:
         # Prepare template data
@@ -65,7 +65,7 @@ def generate_command_briefing(learning_path: dict) -> str:
 
         # Render HTML template
         env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
-        template = env.get_template("command_briefing.html")
+        template = env.get_template("learning_path.html")
         html_content = template.render(**template_data)
         
         logger.info("[tool:pdf] Template rendered successfully")
@@ -124,7 +124,7 @@ def generate_pdf(learning_path: dict) -> bytes:
 
         # Render HTML template
         env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
-        template = env.get_template("command_briefing.html")
+        template = env.get_template("learning_path.html")
         html_content = template.render(**template_data)
 
         # Convert HTML to PDF
@@ -161,7 +161,7 @@ def render_html(learning_path: dict) -> str:
     }
 
     env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
-    template = env.get_template("command_briefing.html")
+    template = env.get_template("learning_path.html")
     return template.render(**template_data)
 
 

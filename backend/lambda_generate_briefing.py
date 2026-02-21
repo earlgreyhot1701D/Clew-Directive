@@ -22,7 +22,7 @@ import json
 import logging
 
 from agents.orchestrator import Orchestrator
-from tools.pdf_generator import generate_command_briefing
+from tools.pdf_generator import generate_learning_path
 from exceptions import ClewException, ValidationError, PDFGenerationError
 
 logger = logging.getLogger("clew.lambda.generate_briefing")
@@ -91,9 +91,9 @@ def lambda_handler(event, context):
         learning_path_data = orchestrator.generate_briefing(approved_profile)
 
         # Generate PDF
-        logger.info("[lambda:generate_briefing] Generating Command Briefing PDF")
+        logger.info("[lambda:generate_briefing] Generating Learning Path PDF")
         try:
-            pdf_url = generate_command_briefing(learning_path_data)
+            pdf_url = generate_learning_path(learning_path_data)
             learning_path_data["pdf_url"] = pdf_url
             logger.info("[lambda:generate_briefing] PDF generated: %s", pdf_url[:100])
         except Exception as pdf_error:

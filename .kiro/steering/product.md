@@ -7,7 +7,7 @@
 
 ## Mission
 
-Clew Directive (CD) is a free, open-source, stateless AI tool that generates personalized "Command Briefing" PDFs mapping new AI learners to verified free learning resources. No accounts, no tracking, no paywalls.
+Clew Directive (CD) is a free, open-source, stateless AI tool that generates personalized "Learning Path" PDFs mapping new AI learners to verified free learning resources. No accounts, no tracking, no paywalls.
 
 **Tagline**: "Stop following the hype. Start directing the search."
 
@@ -122,7 +122,7 @@ Help us refine this. What should we adjust?
 ```
 Your Learning Path is Ready
 
-[Download Command Briefing (PDF)]
+[Download Learning Path (PDF)]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

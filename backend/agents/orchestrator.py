@@ -22,7 +22,7 @@ from agents.scout import ScoutAgent
 from agents.navigator import NavigatorAgent
 from interfaces.memory_interface import MemoryInterface, create_memory
 from interfaces.knowledge_interface import KnowledgeInterface
-from tools.pdf_generator import generate_command_briefing
+from tools.pdf_generator import generate_learning_path
 from exceptions import (
     ClewException,
     BedrockTimeoutError,
@@ -297,7 +297,7 @@ class Orchestrator:
         learning_path = self.navigator.generate_learning_path(profile, verified)
 
         # Generate PDF
-        pdf_url = generate_command_briefing(learning_path)
+        pdf_url = generate_learning_path(learning_path)
 
         # Clear session — stateless
         self.memory.clear()

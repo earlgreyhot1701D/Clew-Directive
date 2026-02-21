@@ -4,7 +4,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Clew Directive — AI Learning Navigator',
   description:
-    'Free, personalized AI learning paths. No accounts, no tracking. Take the Vibe Check, get your Command Briefing.',
+    'Free, personalized AI learning paths. No accounts, no tracking. Take the Vibe Check, get your Learning Path.',
   // WCAG: language declaration
 };
 

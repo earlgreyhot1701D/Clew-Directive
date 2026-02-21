@@ -282,7 +282,7 @@ class TestGenerateBriefingHandler:
         """Create a mock API Gateway event."""
         return {"body": json.dumps(body)}
 
-    @patch("backend.lambda_generate_briefing.generate_command_briefing")
+    @patch("backend.lambda_generate_briefing.generate_learning_path")
     @patch("backend.lambda_generate_briefing.Orchestrator")
     def test_generate_briefing_success(self, mock_orchestrator_class, mock_pdf_gen):
         """Valid input should return learning path and PDF URL."""
@@ -371,7 +371,7 @@ class TestGenerateBriefingHandler:
         assert "error" in body
         assert "resource directory" in body["error"].lower()
 
-    @patch("backend.lambda_generate_briefing.generate_command_briefing")
+    @patch("backend.lambda_generate_briefing.generate_learning_path")
     @patch("backend.lambda_generate_briefing.Orchestrator")
     def test_generate_briefing_pdf_error(self, mock_orchestrator_class, mock_pdf_gen):
         """PDF generation error should still return path (graceful degradation)."""
@@ -399,7 +399,7 @@ class TestGenerateBriefingHandler:
         assert body["pdf_url"] is None
         assert "pdf_warning" in body
 
-    @patch("backend.lambda_generate_briefing.generate_command_briefing")
+    @patch("backend.lambda_generate_briefing.generate_learning_path")
     @patch("backend.lambda_generate_briefing.Orchestrator")
     def test_generate_briefing_cors_headers(self, mock_orchestrator_class, mock_pdf_gen):
         """Response should include CORS headers."""

@@ -2,7 +2,7 @@
 
 **Stop following the hype. Start directing the search.**
 
-Clew Directive is a free, open-source, stateless AI tool that generates personalized **Command Briefing** PDFs — mapping new AI learners to the best free learning resources based on their goals, experience, and learning style.
+Clew Directive is a free, open-source, stateless AI tool that generates personalized **Learning Path** PDFs — mapping new AI learners to the best free learning resources based on their goals, experience, and learning style.
 
 No accounts. No tracking. No paywalls. Your briefing is yours.
 
@@ -22,7 +22,7 @@ No accounts. No tracking. No paywalls. Your briefing is yours.
 
 The AI education landscape is overwhelming. Thousands of courses, tutorials, and certifications compete for attention — most behind paywalls, many outdated, few personalized. People who could benefit most from AI literacy are the most likely to be lost in the noise.
 
-Clew Directive cuts through it. Take a 60-second **Vibe Check**, get a personalized learning path from verified, free resources, download your **Command Briefing** PDF, and go. That's it.
+Clew Directive cuts through it. Take a 60-second **Vibe Check**, get a personalized learning path from verified, free resources, download your **Learning Path** PDF, and go. That's it.
 
 ---
 
@@ -104,9 +104,9 @@ The interface guides users through one profile refinement. Users confirm their p
 
 ### PDF Download
 ![Download My Plan](docs/Download%20My%20Plan.png)
-*Download button for Command Briefing PDF*
+*Download button for Learning Path PDF*
 
-### Command Briefing PDF
+### Learning Path PDF
 ![Command Briefing](docs/Command%20Briefing.png)
 *Example PDF output with clickable resource links*
 

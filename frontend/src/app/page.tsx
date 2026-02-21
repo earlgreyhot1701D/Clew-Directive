@@ -932,7 +932,7 @@ export default function Home() {
                         marginBottom: '0.25rem',
                         color: loadingStep >= 3 ? 'var(--accent-primary)' : 'var(--text-dim)'
                       }}>
-                        Creating your Command Briefing PDF...
+                        Creating your Learning Path PDF...
                       </div>
                       <div style={{ 
                         fontSize: '0.9rem',
