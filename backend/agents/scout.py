@@ -49,7 +49,7 @@ class ScoutAgent:
         Args:
             domain: Knowledge domain to load resources for.
             verify_urls: If True AND resource_verifier is provided, perform runtime HTTP HEAD checks.
-                         WARNING: With 23 resources and 5s timeout + 2 retries, worst-case is 345s.
+                         WARNING: With 28 resources and 5s timeout + 2 retries, worst-case is 420s.
                          Only enable for Curator runs with generous Lambda timeout (300s+).
                          User-facing requests should use verify_urls=False (default).
                          Production: Scout trusts Curator's weekly verification.

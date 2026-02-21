@@ -194,7 +194,7 @@ This demonstrates genuine AI reasoning, not keyword matching or collaborative fi
 | Agent framework | Strands Agents SDK (Python, v1.0 GA) | Production-grade, official Lambda Layer, battle-tested |
 | Scout model | Amazon Nova Micro | 71x cheaper than Sonnet; sufficient for URL verification |
 | Navigator model | Amazon Nova 2 Lite | Fast reasoning for profile analysis and path generation; instant access |
-| Knowledge layer | Curated S3 JSON | Occam's Razor — 23 handpicked resources don't need vector search |
+| Knowledge layer | Curated S3 JSON | Occam's Razor — 28 handpicked resources don't need vector search |
 | Freshness | Curator Lambda (weekly) | Automated URL verification; ~$0.00/month on Free Tier |
 | PDF generation | WeasyPrint | HTML→PDF with clickable links; preserves terminal aesthetic |
 | Frontend | Next.js on Amplify | Live URL for voting period; Free Tier hosting |
@@ -228,7 +228,7 @@ Every resource in `directory.json` passes a **5-gate quality standard**:
 
 Resources are hand-curated against these standards. The directory is reviewed and updated regularly.
 
-Current directory: **23 resources** from Helsinki, Stanford, MIT, Harvard, Google, AWS, Microsoft, NVIDIA, DeepLearning.AI, Hugging Face, and IBM.
+Current directory: **28 resources** from Helsinki, Stanford, MIT, Harvard, Google, AWS, Microsoft, NVIDIA, DeepLearning.AI, Hugging Face, IBM, fast.ai, Kaggle, LinkedIn Learning, and Adobe.
 
 The Curator Lambda verifies every URL weekly. Status progression: `active → degraded → stale → dead`. Only `active` resources reach users.
 
@@ -236,7 +236,7 @@ The Curator Lambda verifies every URL weekly. Status progression: `active → de
 
 ## Resource Database (v1.0 - MVP)
 
-**Current State**: 23 curated resources covering AI foundations through advanced topics
+**Current State**: 28 curated resources covering AI foundations through advanced topics
 
 **Quality Over Quantity**: Each resource passes our 5-gate curation standard:
 1. Authority (trusted source)
@@ -256,7 +256,7 @@ The Curator Lambda verifies every URL weekly. Status progression: `active → de
 - 🎯 **Q3 2026**: Add specialized domains (NLP, Computer Vision, RL)
 - 🎯 **Q4 2026**: Community curation (vetted submissions)
 
-**Why Start Small?** We're validating the curation process and personalization algorithms before scaling. 23 resources is enough to demonstrate meaningful personalization while maintaining quality standards.
+**Why Start Small?** We're validating the curation process and personalization algorithms before scaling. 28 resources is enough to demonstrate meaningful personalization while maintaining quality standards.
 
 ---
 

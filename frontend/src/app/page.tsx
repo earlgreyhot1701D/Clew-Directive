@@ -887,7 +887,7 @@ export default function Home() {
                         color: 'var(--text-dim)',
                         lineHeight: '1.5'
                       }}>
-                        Filtering 23 verified resources to match your needs
+                        Filtering 28 verified resources to match your needs
                       </div>
                     </div>
                   </div>
