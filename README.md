@@ -6,6 +6,8 @@ Clew Directive is a free, open-source, stateless AI tool that generates personal
 
 No accounts. No tracking. No paywalls. Your briefing is yours.
 
+**Built on Amazon Nova** for fast, cost-effective reasoning at scale — enabling global access without resource constraints.
+
 **Privacy by Design**:
 - Sessions are stateless — no database, no user accounts, no tracking pixels
 - PDFs are stored temporarily in S3 (auto-deleted after 24 hours)
@@ -23,6 +25,8 @@ No accounts. No tracking. No paywalls. Your briefing is yours.
 The AI education landscape is overwhelming. Thousands of courses, tutorials, and certifications compete for attention — most behind paywalls, many outdated, few personalized. People who could benefit most from AI literacy are the most likely to be lost in the noise.
 
 Clew Directive cuts through it. Take a 60-second **Vibe Check**, get a personalized learning path from verified, free resources, download your **Learning Path** PDF, and go. That's it.
+
+**Impact**: Democratizing AI education access globally by removing financial and cognitive barriers. One personalized learning path eliminates hours of research and removes paywalls entirely—making AI literacy available to educators, career-changers, and lifelong learners regardless of geography or budget.
 
 ---
 
@@ -145,6 +149,22 @@ The interface guides users through one profile refinement. Users confirm their p
 - ✅ **Resource selection adapts** to learning style, goals, and professional context
 
 This demonstrates genuine AI reasoning, not keyword matching or collaborative filtering.
+
+## Why Amazon Nova
+
+Clew Directive is built as a **multi-agent reasoning system**, and Nova's agentic capabilities are the technical foundation.
+
+**Agent-Driven Architecture**:
+- **Scout Agent (Nova Micro)**: Independently reasons about resource freshness. Not simple keyword matching—it evaluates URL validity, content currency, pedagogical alignment, and global accessibility as part of a systematic verification pipeline. Runs weekly via EventBridge, keeping the resource directory trustworthy without manual curation.
+- **Navigator Agent (Nova 2 Lite)**: Synthesizes a user's 4-question profile into a coherent learning persona, then **reasons step-by-step through 28 curated resources** to select a personalized path. This isn't collaborative filtering or rule-based matching. Nova 2 Lite's extended thinking and multi-step reasoning capabilities enable it to understand nuance—balancing user goals, learning style, background, and time constraints in a single coherent decision.
+
+**Why This Matters for Learning Paths**:
+Traditional AI systems for recommendations rely on pattern matching or heuristic scoring. Clew Directive uses **reasoning-driven personalization**—Nova 2 Lite thinks through trade-offs (ethics-heavy vs. hands-on vs. business-focused paths) and justifies each resource selection with explicit reasoning visible to users. This produces genuinely different paths for different learners, not template variations.
+
+**Technical Efficiency Without Compromise**:
+- **Nova Micro**: 71x cheaper than comparable models, enabling continuous autonomous curation (weekly URL freshness checks cost ~$0.00/month on Free Tier).
+- **Nova 2 Lite**: Fast reasoning model with tunable thinking effort—striking the balance between instant response times (no user frustration) and deep reasoning quality (no shallow personalization).
+- **Result**: A production reasoning system that costs **~$11-12/month**, allowing 6-8 months of runway on $100 AWS credit. Cost efficiency doesn't dilute reasoning quality—it enables scalable impact. The system remains free forever, globally accessible, because Nova's price-to-reasoning ratio makes it economically sustainable.
 
 ## Architecture
 
@@ -630,10 +650,13 @@ Kiro hooks automate quality gates during development:
 Shipped today as a focused tool for **new AI learners**. The architecture supports expansion:
 
 - **Multiple domains**: Schema includes a `domain` field. MVP uses "ai-foundations." Future: AI for healthcare, educators, creatives, etc.
+- **Community partnerships**: Integration pathways with education nonprofits, bootcamps, and public libraries to embed Clew Directive into existing learning ecosystems.
 - **Email briefings**: Interface stubbed, HTML template ready. Wire up Amazon SES.
 - **AgentCore Memory**: Interface exists. Swap in for cross-session context (with consent).
 - **Long-term memory with consent**: Privacy-first opt-in for returning users.
 - **Community curation**: GitHub issues workflow for resource contributions.
+
+**Adoption vision**: Clew Directive becomes the default "entry point" for new AI learners globally—a trusted, free, accessible resource that removes barriers and directs learners toward verified knowledge, regardless of geography, background, or budget.
 
 ---
 
@@ -643,6 +666,12 @@ Clew Directive is an open-source AI learning navigator built to democratize AI e
 
 **Creator**: [La-Shara Cordero](https://www.linkedin.com/in/la-shara-cordero-a0017a11/)  
 **GitHub**: [earlgreyhot1701D/Clew-Directive](https://github.com/earlgreyhot1701D/Clew-Directive)
+
+---
+
+## Development Approach
+
+**This is an AI-assisted, human-reviewed build.** All decisions and mistakes are mine. I used Kiro IDE, Claude, ChatGPT, Gemini, and other AI tools throughout development for scaffolding, code generation, testing, and architectural review. Every output was reviewed, tested, and integrated with full accountability for correctness and alignment.
 
 ---
 
