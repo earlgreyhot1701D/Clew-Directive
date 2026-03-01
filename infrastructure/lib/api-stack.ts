@@ -20,7 +20,7 @@ interface ApiStackProps extends cdk.StackProps {
  *
  * Cost controls:
  *   - API Gateway: 10 req/sec rate limit
- *   - Lambda: reserved concurrency of 10 per function (enforced)
+ *   - Lambda: scaling unreserved — API Gateway rate limiting (10 req/sec) is the primary cost guardrail
  *   - Timeout: 30 seconds (90 seconds for briefing generation)
  *   - Memory: 512 MB
  */
@@ -45,7 +45,6 @@ export class ApiStack extends cdk.Stack {
       memorySize: 512,
       timeout: cdk.Duration.seconds(30),
       description: 'Process Vibe Check responses and return profile summary',
-      reservedConcurrentExecutions: 10,
       // 7-day retention: logs may contain session content (profiles, Vibe Check answers). Auto-expire to support privacy-by-design claim.
       logRetention: logs.RetentionDays.ONE_WEEK,
       environment: {
@@ -64,7 +63,6 @@ export class ApiStack extends cdk.Stack {
       memorySize: 512,
       timeout: cdk.Duration.seconds(30),
       description: 'Refine profile based on user correction',
-      reservedConcurrentExecutions: 10,
       // 7-day retention: logs may contain session content (profiles, Vibe Check answers). Auto-expire to support privacy-by-design claim.
       logRetention: logs.RetentionDays.ONE_WEEK,
       environment: {
@@ -83,7 +81,6 @@ export class ApiStack extends cdk.Stack {
       memorySize: 512,
       timeout: cdk.Duration.seconds(90), // Longer timeout for Scout + Navigator + PDF
       description: 'Generate learning path and Command Briefing PDF',
-      reservedConcurrentExecutions: 10,
       // 7-day retention: logs may contain session content (profiles, Vibe Check answers). Auto-expire to support privacy-by-design claim.
       logRetention: logs.RetentionDays.ONE_WEEK,
       environment: {
