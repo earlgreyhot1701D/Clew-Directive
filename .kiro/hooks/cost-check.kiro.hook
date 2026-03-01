@@ -8,6 +8,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Review the changes for cost impact: Flag any new AWS service not in the approved list (see tech.md), verify Lambda memory/timeout stays within Free Tier bounds, check that reserved concurrency limits are set, verify API Gateway throttling is configured, alert if a Bedrock model is changed to a more expensive tier, ensure EventBridge schedule doesn't exceed free invocations."
+    "prompt": "Review the changes for cost impact: Flag any new AWS service not in the approved list (see tech.md), verify Lambda memory/timeout stays within Free Tier bounds, verify API Gateway throttling is configured (10 req/sec rate limit), alert if a Bedrock model is changed to a more expensive tier, ensure EventBridge schedule doesn't exceed free invocations."
   }
 }

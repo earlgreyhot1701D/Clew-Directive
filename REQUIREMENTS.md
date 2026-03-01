@@ -231,8 +231,8 @@ After 24h → PDF deleted
 7. Cost Controls (Voting Period: March 13-20)
 Rate Limiting
 
-API Gateway: 10 req/sec global
-Lambda: 10 reserved concurrency per function
+API Gateway: 10 req/sec global (primary cost control)
+Lambda: Unreserved scaling (controlled by API Gateway throttling)
 Bedrock: CloudWatch alarm on token spend
 Budget alerts at $50/$100/$150
 

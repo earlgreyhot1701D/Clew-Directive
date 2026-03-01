@@ -323,17 +323,18 @@ const api = new apigateway.RestApi(this, 'ClewAPI', {
 
 **Response on limit**: 429 with message "High traffic right now! Refresh in a moment."
 
-### Control 2: Lambda Reserved Concurrency
+### Control 2: Lambda Scaling (Unreserved)
 
-Lambda functions have reserved concurrency set to 10 per function to control costs during the voting period.
+Lambda functions scale without reserved concurrency limits. API Gateway rate limiting (10 req/sec) is the primary cost guardrail.
 
 **Behavior**: 
-- Each Lambda function (Vibe Check, Refine Profile, Generate Briefing) limited to 10 concurrent executions
-- Requests queue if limit reached (API Gateway returns 429 if queue fills)
-- Prevents runaway costs from traffic spikes
-- CloudWatch metrics track throttling
+- Lambda scales naturally based on incoming requests
+- API Gateway throttles at 10 req/sec (burst: 20)
+- Requests exceeding rate limit receive 429 responses
+- Prevents runaway costs from traffic spikes at the API layer
+- CloudWatch metrics track API Gateway throttling
 
-**Monitoring**: Watch `ConcurrentExecutions` and `Throttles` metrics in CloudWatch
+**Monitoring**: Watch API Gateway `Count` and `4XXError` metrics in CloudWatch
 
 ### Control 3: Bedrock Token Budget Alarm
 ```typescript
