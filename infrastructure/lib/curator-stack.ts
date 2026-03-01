@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as logs from 'aws-cdk-lib/aws-logs';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -29,6 +30,8 @@ export class CuratorStack extends cdk.Stack {
       code: lambda.Code.fromAsset('../backend'),
       timeout: cdk.Duration.minutes(5), // URL checks take time
       memorySize: 256,
+      // 7-day retention: auto-expire to support privacy-by-design claim.
+      logRetention: logs.RetentionDays.ONE_WEEK,
       environment: {
         CD_ENVIRONMENT: 'prod',
         CD_S3_BUCKET: props.dataBucket.bucketName,
