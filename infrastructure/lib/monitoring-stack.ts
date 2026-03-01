@@ -160,6 +160,24 @@ export class MonitoringStack extends cdk.Stack {
 
     curatorErrorAlarm.addAlarmAction(new cloudwatch_actions.SnsAction(alarmTopic));
 
+    // Curator resource failure rate
+    const curatorFailureRateAlarm = new cloudwatch.Alarm(this, 'CuratorResourceFailureRateAlarm', {
+      alarmName: 'ClewDirective-CuratorResourceFailureRate',
+      alarmDescription: 'Alert when >10% of curated resources fail freshness check',
+      metric: new cloudwatch.Metric({
+        namespace: 'ClewDirective/Curator',
+        metricName: 'ResourceFailureRate',
+        statistic: 'Maximum',
+        period: cdk.Duration.days(7),
+      }),
+      threshold: 10,
+      evaluationPeriods: 1,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+      treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+    });
+
+    curatorFailureRateAlarm.addAlarmAction(new cloudwatch_actions.SnsAction(alarmTopic));
+
     // ============================================
     // ALARM 3: API Gateway 5xx Errors
     // ============================================
