@@ -367,7 +367,7 @@ export default function Home() {
                         ×
                       </button>
                       <p style={{ margin: 0, lineHeight: '1.4' }}>
-                        <strong>Privacy:</strong> No cookies, no tracking. Your plan is yours to keep.
+                        <strong>Privacy:</strong> No cookies, no personal data collected. Your plan is yours to keep.
                       </p>
                     </div>
                   )}
