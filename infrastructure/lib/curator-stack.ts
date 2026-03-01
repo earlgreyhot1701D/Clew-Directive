@@ -49,6 +49,18 @@ export class CuratorStack extends cdk.Stack {
       resources: ['*'], // TODO: Scope to Nova Micro ARN
     }));
 
+    // Curator publishes custom CloudWatch metrics
+    curatorFn.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['cloudwatch:PutMetricData'],
+      resources: ['*'],
+      conditions: {
+        StringEquals: {
+          'cloudwatch:namespace': 'ClewDirective/Curator',
+        },
+      },
+    }));
+
     // Weekly schedule: every Sunday at 2:00 AM UTC
     new events.Rule(this, 'WeeklyCuratorRule', {
       schedule: events.Schedule.cron({
