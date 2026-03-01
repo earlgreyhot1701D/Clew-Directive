@@ -571,6 +571,14 @@ Both Nova models are instantly available in all AWS accounts. No approval proces
 
 ### Monitoring
 
+**CloudWatch Dashboard**: View real-time metrics at `ClewDirective-Monitoring` dashboard
+
+**Alarms** (email notifications via SNS):
+1. **High Traffic**: >200 briefings/day
+2. **Lambda Errors**: >5 errors in 5 minutes (per function)
+3. **API Gateway 5xx**: >5 server errors in 5 minutes
+4. **API Gateway 4xx**: >20 client errors in 5 minutes
+
 View Lambda logs:
 ```bash
 # Vibe Check logs
