@@ -4,12 +4,13 @@
 
 Clew Directive is a free, open-source, stateless AI tool that generates personalized **Learning Path** PDFs — mapping new AI learners to the best free learning resources based on their goals, experience, and learning style.
 
-No accounts. No tracking. No paywalls. Your briefing is yours.
+No accounts. No personal data collected. No paywalls. Your briefing is yours.
 
 **Built on Amazon Nova** for fast, cost-effective reasoning at scale — enabling global access without resource constraints.
 
 **Privacy by Design**:
-- Sessions are stateless — no database, no user accounts, no tracking pixels
+- Sessions are stateless — no database, no user accounts
+- Aggregate analytics only (no individual tracking)
 - PDFs are stored temporarily in S3 (auto-deleted after 24 hours)
 - Lambda execution logs are retained for 7 days then auto-deleted
 - No personally identifiable information is collected
@@ -602,8 +603,8 @@ PDF is the core deliverable. Generation failures are logged as WARNING but don't
 **R7: Structured JSON Request Logging**  
 Enable CloudWatch Logs Insights queries for avg/p95/p99 latency by operation. Requires structured JSON logs with duration tracking across all Lambda handlers.
 
-**R8: Privacy-First Frontend Analytics**  
-Plausible or Umami (one `<Script>` tag in layout.tsx). Custom event tracking for Vibe Check funnel. Requires updating privacy claim from "no tracking" to "no personal data collected."
+**R8: Privacy-First Frontend Analytics** ✅ IMPLEMENTED  
+Umami analytics added via script tag in layout.tsx. Cookie-free, no personal data collected. Tracks five funnel events: session_started, profile_generated, profile_approved, refinement_requested, pdf_downloaded.
 
 **R9: Business Event Metrics via Log Filters**  
 Convert key log messages into dashboardable CloudWatch metrics: briefings generated, fallback usage, PDF failures. No code changes — just Metric Filters on existing logs.
