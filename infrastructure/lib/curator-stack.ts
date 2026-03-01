@@ -18,6 +18,8 @@ interface CuratorStackProps extends cdk.StackProps {
  * Cost: ~$0.00/month (all Free Tier).
  */
 export class CuratorStack extends cdk.Stack {
+  public readonly curatorFunction: lambda.Function;
+
   constructor(scope: Construct, id: string, props: CuratorStackProps) {
     super(scope, id, props);
 
@@ -53,5 +55,8 @@ export class CuratorStack extends cdk.Stack {
       }),
       targets: [new targets.LambdaFunction(curatorFn)],
     });
+
+    // Export for monitoring
+    this.curatorFunction = curatorFn;
   }
 }

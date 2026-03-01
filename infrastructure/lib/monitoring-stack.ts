@@ -11,6 +11,7 @@ interface MonitoringStackProps extends cdk.StackProps {
   vibeCheckFunctionName: string;
   refineProfileFunctionName: string;
   generateBriefingFunctionName: string;
+  curatorFunctionName: string;
   apiGatewayName: string;
 }
 
@@ -59,6 +60,12 @@ export class MonitoringStack extends cdk.Stack {
       this,
       'GenerateBriefingFunction',
       props.generateBriefingFunctionName
+    );
+
+    const curatorFn = lambda.Function.fromFunctionName(
+      this,
+      'CuratorFunction',
+      props.curatorFunctionName
     );
 
     // Import API Gateway by name
@@ -136,6 +143,22 @@ export class MonitoringStack extends cdk.Stack {
     });
 
     generateBriefingErrorAlarm.addAlarmAction(new cloudwatch_actions.SnsAction(alarmTopic));
+
+    // Curator errors
+    const curatorErrorAlarm = new cloudwatch.Alarm(this, 'CuratorErrorAlarm', {
+      alarmName: 'ClewDirective-CuratorErrors',
+      alarmDescription: 'Alert when weekly Curator run has any errors',
+      metric: curatorFn.metricErrors({
+        statistic: 'Sum',
+        period: cdk.Duration.days(1),
+      }),
+      threshold: 0,
+      evaluationPeriods: 1,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+      treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+    });
+
+    curatorErrorAlarm.addAlarmAction(new cloudwatch_actions.SnsAction(alarmTopic));
 
     // ============================================
     // ALARM 3: API Gateway 5xx Errors

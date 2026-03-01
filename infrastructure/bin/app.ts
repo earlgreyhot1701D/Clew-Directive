@@ -31,7 +31,7 @@ const apiStack = new ApiStack(app, 'ClewDirective-Api', {
   dataBucket: storage.dataBucket,
 });
 
-new CuratorStack(app, 'ClewDirective-Curator', {
+const curatorStack = new CuratorStack(app, 'ClewDirective-Curator', {
   env,
   dataBucket: storage.dataBucket,
 });
@@ -46,5 +46,6 @@ new MonitoringStack(app, 'ClewDirective-Monitoring', {
   vibeCheckFunctionName: apiStack.vibeCheckFunctionName,
   refineProfileFunctionName: apiStack.refineProfileFunctionName,
   generateBriefingFunctionName: apiStack.generateBriefingFunctionName,
+  curatorFunctionName: curatorStack.curatorFunction.functionName,
   apiGatewayName: apiStack.apiGatewayName,
 });
