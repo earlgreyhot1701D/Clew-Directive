@@ -589,6 +589,37 @@ aws logs tail /aws/lambda/ClewDirective-Api-VibeCheckFunction --follow
 aws logs tail /aws/lambda/ClewDirective-Api-GenerateBriefingFunction --follow
 ```
 
+### What's Not Yet Visible (v2 Roadmap)
+
+These observability gaps were identified but deferred due to effort or requiring product decisions:
+
+**R2: Navigator Fallback Usage Tracking**  
+When Navigator fails, users silently receive heuristic paths instead of AI-generated ones. Currently logged as WARNING — invisible to alarms. Needs CloudWatch Metric Filter to surface as error-level metric.
+
+**R3: PDF Generation Failure Metrics**  
+PDF is the core deliverable. Generation failures are logged as WARNING but don't trigger alarms. Should be a distinct CloudWatch metric with its own alarm.
+
+**R7: Structured JSON Request Logging**  
+Enable CloudWatch Logs Insights queries for avg/p95/p99 latency by operation. Requires structured JSON logs with duration tracking across all Lambda handlers.
+
+**R8: Privacy-First Frontend Analytics**  
+Plausible or Umami (one `<Script>` tag in layout.tsx). Custom event tracking for Vibe Check funnel. Requires updating privacy claim from "no tracking" to "no personal data collected."
+
+**R9: Business Event Metrics via Log Filters**  
+Convert key log messages into dashboardable CloudWatch metrics: briefings generated, fallback usage, PDF failures. No code changes — just Metric Filters on existing logs.
+
+**R10: p95/p99 Duration Widgets**  
+Current dashboard only shows average latency. Add p95/p99 widgets to catch tail latency issues.
+
+**R12: AWS X-Ray Tracing**  
+Full request path visibility (API GW → Lambda → Bedrock → S3). Free tier: 100K traces/month. One-line code change per Lambda.
+
+**R15: Bedrock Token Usage Logging**  
+Only way to see per-request Bedrock costs. Requires custom CloudWatch metrics published from Lambda handlers after each Bedrock invocation.
+
+**R16: Enforce max_daily_requests**  
+Defined in settings.py but never checked in code. Needs implementation in Lambda handlers with CloudWatch counter metric.
+
 ### Cost Management
 
 All infrastructure runs on AWS Free Tier during development. Expected cost during voting period (500 briefings):
