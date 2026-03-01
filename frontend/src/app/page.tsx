@@ -125,6 +125,7 @@ export default function Home() {
     try {
       const response = await submitVibeCheck(vibeCheckResponses);
       setProfile(response.profile);
+      window.umami?.track('profile_generated');
       
       // Scroll to profile section
       setTimeout(() => {
@@ -151,6 +152,8 @@ export default function Home() {
 
   const handleApproveProfile = async () => {
     if (!profile) return;
+    
+    window.umami?.track('profile_approved');
     
     setIsGeneratingBriefing(true);
     setLoadingStep(0);
@@ -344,7 +347,7 @@ export default function Home() {
                     color: 'var(--text-dim)'
                   }}>
                     <div>✓ No Account Required</div>
-                    <div>✓ No Tracking</div>
+                    <div>✓ No Personal Data Collected</div>
                     <div>✓ Free to Use</div>
                   </div>
 
@@ -371,7 +374,10 @@ export default function Home() {
 
                   {/* CTA Button */}
                   <button
-                    onClick={() => setAppPhase('working')}
+                    onClick={() => {
+                      setAppPhase('working');
+                      window.umami?.track('session_started');
+                    }}
                     className="terminal-button"
                     aria-label="Start the assessment to get your learning plan"
                     style={{ 
@@ -715,7 +721,10 @@ export default function Home() {
                       </button>
                       {refinementCount < 1 ? (
                         <button
-                          onClick={() => setShowRefinement(true)}
+                          onClick={() => {
+                            setShowRefinement(true);
+                            window.umami?.track('refinement_requested');
+                          }}
                           className="terminal-button"
                         >
                           Not Quite
@@ -1049,7 +1058,10 @@ export default function Home() {
                   <button
                     className="terminal-button"
                     style={{ width: '100%', marginTop: '2rem' }}
-                    onClick={() => window.open(briefing.pdf_url, '_blank')}
+                    onClick={() => {
+                      window.umami?.track('pdf_downloaded');
+                      window.open(briefing.pdf_url, '_blank');
+                    }}
                   >
                     Download My Plan (PDF)
                   </button>
@@ -1163,7 +1175,7 @@ export default function Home() {
                     lineHeight: '1.7',
                     fontSize: '0.95rem'
                   }}>
-                    This session is temporary. No cookies, no accounts, no tracking. Your learning plan is yours to keep.
+                    This session is temporary. No cookies, no accounts, no personal data collected. Aggregate analytics help us understand if the site is working — no individual data is ever stored or shared. Your learning plan is yours to keep.
                   </p>
                 </div>
 
