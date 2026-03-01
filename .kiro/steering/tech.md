@@ -323,13 +323,14 @@ const api = new apigateway.RestApi(this, 'ClewAPI', {
 
 **Response on limit**: 429 with message "High traffic right now! Refresh in a moment."
 
-### Control 2: Lambda Automatic Scaling
+### Control 2: Lambda Reserved Concurrency
 
-Lambda functions scale automatically based on demand. Reserved concurrency was removed to avoid issues in new AWS accounts.
+Lambda functions have reserved concurrency set to 10 per function to control costs during the voting period.
 
 **Behavior**: 
-- Lambda scales up to account-level concurrent execution limit (default: 1000)
-- Requests queue if limit reached
+- Each Lambda function (Vibe Check, Refine Profile, Generate Briefing) limited to 10 concurrent executions
+- Requests queue if limit reached (API Gateway returns 429 if queue fills)
+- Prevents runaway costs from traffic spikes
 - CloudWatch metrics track throttling
 
 **Monitoring**: Watch `ConcurrentExecutions` and `Throttles` metrics in CloudWatch

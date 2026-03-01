@@ -220,7 +220,7 @@ Traditional AI systems for recommendations rely on pattern matching or heuristic
 | Frontend | Next.js on Amplify | Live URL for voting period; Free Tier hosting |
 | IaC | TypeScript CDK | All infrastructure defined in code |
 | Accessibility | WCAG 2.1 AAA contrast ratios (13.24:1) | Social good tool must be accessible to all |
-| Lambda scaling | Automatic (unreserved) | Scales to account limits; avoids new account issues |
+| Lambda scaling | Reserved concurrency (10 per function) | Cost control: caps concurrent executions at 10 per function |
 
 ### Cost (Voting Period Estimate)
 

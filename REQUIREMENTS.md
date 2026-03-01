@@ -232,7 +232,7 @@ After 24h → PDF deleted
 Rate Limiting
 
 API Gateway: 10 req/sec global
-Lambda: 5-10 reserved concurrency
+Lambda: 10 reserved concurrency per function
 Bedrock: CloudWatch alarm on token spend
 Budget alerts at $50/$100/$150
 
