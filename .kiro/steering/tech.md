@@ -386,6 +386,22 @@ navigatorRole.addToPolicy(new iam.PolicyStatement({
   actions: ['bedrock:InvokeModel'],
   resources: ['arn:aws:bedrock:*::foundation-model/anthropic.claude-v4-sonnet']
 }));
+
+// Curator Lambda: S3 read/write + CloudWatch metrics
+curatorRole.addToPolicy(new iam.PolicyStatement({
+  actions: ['s3:GetObject', 's3:PutObject'],
+  resources: [`${directoryBucket.bucketArn}/directory.json`]
+}));
+
+curatorRole.addToPolicy(new iam.PolicyStatement({
+  actions: ['cloudwatch:PutMetricData'],
+  resources: ['*'],
+  conditions: {
+    StringEquals: {
+      'cloudwatch:namespace': 'ClewDirective/Curator'
+    }
+  }
+}));
 ```
 
 ### Input Sanitization

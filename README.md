@@ -581,6 +581,13 @@ Both Nova models are instantly available in all AWS accounts. No approval proces
 4. **API Gateway 5xx**: >5 server errors in 5 minutes
 5. **API Gateway 4xx**: >20 client errors in 5 minutes
 
+**Curator CloudWatch Metrics** (published weekly):
+- `ClewDirective/Curator/ResourceFailureRate` (Percent): Percentage of resources that failed verification
+- `ClewDirective/Curator/FailedResources` (Count): Number of resources with non-active status
+- `ClewDirective/Curator/TotalResources` (Count): Total resources in directory
+
+The Curator Lambda has `cloudwatch:PutMetricData` permissions scoped to the `ClewDirective/Curator` namespace for publishing these metrics.
+
 View Lambda logs:
 ```bash
 # Vibe Check logs
@@ -588,6 +595,9 @@ aws logs tail /aws/lambda/ClewDirective-Api-VibeCheckFunction --follow
 
 # Briefing generation logs
 aws logs tail /aws/lambda/ClewDirective-Api-GenerateBriefingFunction --follow
+
+# Curator logs
+aws logs tail /aws/lambda/ClewDirective-Curator-CuratorFunction --follow
 ```
 
 ### What's Not Yet Visible (v2 Roadmap)
