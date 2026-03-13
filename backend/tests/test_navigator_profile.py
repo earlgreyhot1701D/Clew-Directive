@@ -1,10 +1,18 @@
 """
 Tests for Navigator Agent - Profile Synthesis.
+
+Covers:
+    - Profile synthesis with mocked Strands responses
+    - Profile refinement
+    - Fallback behavior on errors
+    - Timeout and throttling error handling
+    - No PII in outputs
 """
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
 from backend.agents.navigator import NavigatorAgent
+from backend.exceptions import BedrockTimeoutError, BedrockThrottleError, InvalidLLMResponseError
 
 
 @pytest.fixture

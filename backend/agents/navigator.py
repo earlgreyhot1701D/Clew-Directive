@@ -14,8 +14,10 @@ lower token cost keeps per-briefing spend well within the $200 credit budget.
 """
 
 import asyncio
+import copy
 import json
 import logging
+import random
 import re
 from typing import Any
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
@@ -391,8 +393,13 @@ Revised profile:"""
             len(verified_resources),
         )
 
+        # Shuffle resource order to eliminate LLM primacy bias
+        # Use a copy so we don't mutate the original list
+        shuffled_resources = copy.deepcopy(verified_resources)
+        random.shuffle(shuffled_resources)
+
         # Build resource catalog for the prompt
-        resource_catalog = self._format_resource_catalog(verified_resources)
+        resource_catalog = self._format_resource_catalog(shuffled_resources)
         
         # Build the prompt for path generation
         prompt = f"""You are creating a personalized learning path for this learner:
@@ -412,7 +419,7 @@ REQUIREMENTS:
 3. Total estimated hours should be 30-60 hours
 4. For each resource, explain WHY it's right for THIS learner (2-3 sentences)
 5. Provide approach guidance (2-3 sentences on how to tackle this path)
-6. Weight higher authority_tier resources (tier 1 > tier 2 > tier 3)
+6. Prioritize resources that best match this learner's goals, learning style, and professional context. Use authority_tier as a quality signal but not as the primary selection criteria — a Tier 2 resource that directly matches the learner's needs is better than a Tier 1 resource that doesn't.
 7. Match learning style from profile (courses for structured learners, projects for hands-on, etc.)
 
 OUTPUT FORMAT (JSON):
@@ -500,6 +507,14 @@ Generate the learning path JSON now:"""
             raise
             
         except Exception as e:
+            # Check for MaxTokensReachedException by name
+            # (may not be directly importable from Strands SDK)
+            if "MaxTokens" in type(e).__name__:
+                logger.warning("[agent:navigator] MaxTokensReachedException — "
+                             "output may be truncated. Falling back to "
+                             "profile-aware fallback. Exception: %s", str(e)[:200])
+                return self._fallback_learning_path(profile_summary, verified_resources)
+            
             error_str = str(e).lower()
             
             # Check for throttling
@@ -569,22 +584,90 @@ Generate the learning path JSON now:"""
         profile_summary: str,
         verified_resources: list[dict],
     ) -> dict:
-        """Fallback path generation if Strands call fails."""
+        """
+        Fallback path generation if Strands call fails.
+        Uses profile keywords to filter and rank resources
+        rather than blindly sorting by authority tier.
+        """
+        import random
+        
         logger.warning("[agent:navigator] Using fallback path generation")
         
-        # Simple heuristic: pick top 4 resources by authority tier (lower is better) and difficulty
-        sorted_resources = sorted(
-            verified_resources,
-            key=lambda r: (
-                r.get('authority_tier', 3),  # Lower tier number = higher authority
-                0 if r.get('difficulty') == 'beginner' else 1,  # Prefer beginner
-            ),
-        )
+        # Extract profile signals from the summary text
+        profile_lower = profile_summary.lower()
         
-        selected = sorted_resources[:4]
+        # Determine preferred difficulty from profile
+        if any(word in profile_lower for word in ["skeptical", "beginner", "new to", "never used",
+                                                    "uncertain", "overwhelmed", "getting started",
+                                                    "no experience", "no technical"]):
+            preferred_difficulty = "beginner"
+        elif any(word in profile_lower for word in ["dabbled", "some experience", "want structure",
+                                                      "used ai tools", "familiar with"]):
+            preferred_difficulty = "intermediate"
+        elif any(word in profile_lower for word in ["advanced", "build things", "deep dive",
+                                                      "already using", "technical background",
+                                                      "engineering", "developer", "programmer"]):
+            preferred_difficulty = "intermediate"  # Note: intermediate not advanced — we want 
+                                                    # to challenge but not overwhelm
+        else:
+            preferred_difficulty = "beginner"
+        
+        # Determine goal signal from profile
+        goal_keywords = {
+            "understand": ["foundations", "introduction", "ethics", "what is ai"],
+            "build": ["hands-on", "project", "building", "practical", "coding", "python"],
+            "career": ["career", "professional", "business",
+                      "industry", "workplace"],
+            "tools": ["tools", "prompt", "generative",
+                     "practical", "workflow"],
+        }
+        
+        matched_goal = "understand"  # default
+        for goal, keywords in goal_keywords.items():
+            if any(kw in profile_lower for kw in keywords):
+                matched_goal = goal
+                break
+        
+        # Score each resource based on profile match
+        scored = []
+        for r in verified_resources:
+            score = 0
+            r_lower = (r.get('name', '') + ' ' + r.get('description', '') + ' ' +
+                      ' '.join(r.get('tags', []))).lower()
+            
+            # Difficulty match (strong signal)
+            if r.get('difficulty') == preferred_difficulty:
+                score += 3
+            elif (preferred_difficulty == "intermediate" and r.get('difficulty') == "beginner"):
+                score += 1  # acceptable fallback
+            
+            # Goal keyword match
+            for kw in goal_keywords.get(matched_goal, []):
+                if kw in r_lower:
+                    score += 2
+                    break
+            
+            # Small random tiebreaker to avoid deterministic 
+            # ordering when scores are equal
+            score += random.uniform(0, 0.5)
+            
+            scored.append((score, r))
+        
+        # Sort by score descending, take top 4-5
+        scored.sort(key=lambda x: x[0], reverse=True)
+        
+        # Select 4 or 5 based on total hours
+        selected = [r for _, r in scored[:5]]
+        total_hours = sum(r.get('estimated_hours', 10) for r in selected)
+        if total_hours > 80:
+            selected = selected[:4]
+            total_hours = sum(r.get('estimated_hours', 10) for r in selected)
+        
+        # Sort selected by difficulty for sequencing
+        diff_order = {"beginner": 0, "intermediate": 1, "advanced": 2}
+        selected.sort(key=lambda r: diff_order.get(r.get('difficulty', 'intermediate'), 1))
         
         recommended = []
-        total_hours = 0
         for i, r in enumerate(selected, 1):
             recommended.append({
                 "resource_id": r.get('id'),
@@ -592,19 +675,23 @@ Generate the learning path JSON now:"""
                 "resource_url": r.get('resource_url'),
                 "provider": r.get('provider'),
                 "provider_url": r.get('provider_url'),
-                "why_for_you": f"This {r.get('format')} from {r.get('provider')} provides {r.get('description', 'quality content')}",
+                "why_for_you": (f"This {r.get('format')} from "
+                               f"{r.get('provider')} provides "
+                               f"{r.get('description', 'quality content')}"),
                 "difficulty": r.get('difficulty'),
                 "estimated_hours": r.get('estimated_hours', 10),
                 "format": r.get('format'),
                 "free_model": r.get('free_model'),
-                "sequence_note": "Start here" if i == 1 else f"Take after resource {i-1}",
+                "sequence_note": ("Start here" if i == 1 else f"Take after resource {i-1}"),
                 "sequence_order": i,
             })
-            total_hours += r.get('estimated_hours', 10)
         
         return {
             "profile_summary": profile_summary,
             "recommended_resources": recommended,
-            "approach_guidance": f"Begin with {selected[0].get('name')} to build your foundation, then progress through the remaining resources in sequence. Each builds on the previous one.",
+            "approach_guidance": (f"Begin with {selected[0].get('name')} to "
+                                 f"build your foundation, then progress "
+                                 f"through the remaining resources in "
+                                 f"sequence."),
             "total_estimated_hours": total_hours,
         }
