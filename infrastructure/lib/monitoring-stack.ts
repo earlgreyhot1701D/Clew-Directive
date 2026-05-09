@@ -206,7 +206,7 @@ export class MonitoringStack extends cdk.Stack {
     // ============================================
     const apiGateway4xxAlarm = new cloudwatch.Alarm(this, 'ApiGateway4xxAlarm', {
       alarmName: 'ClewDirective-ApiGateway4xx',
-      alarmDescription: 'Alert when API Gateway has >20 4xx errors in 5 minutes',
+      alarmDescription: 'Alert when API Gateway has >50 4xx errors in 5 minutes (raised from 20 — bot scanner noise at 37 on 2026-05-09)',
       metric: new cloudwatch.Metric({
         namespace: 'AWS/ApiGateway',
         metricName: '4XXError',
@@ -216,7 +216,7 @@ export class MonitoringStack extends cdk.Stack {
         statistic: 'Sum',
         period: cdk.Duration.minutes(5),
       }),
-      threshold: 20,
+      threshold: 50,
       evaluationPeriods: 1,
       comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
       treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,

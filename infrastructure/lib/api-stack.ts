@@ -124,7 +124,33 @@ export class ApiStack extends cdk.Stack {
       'http://localhost:3000',                       // Local development
     ];
 
-    // API Gateway with rate limiting and CORS
+    // CloudWatch log group for API Gateway access logs
+    // Captures every request: method, path, status code, IP, latency.
+    // Useful for diagnosing 4xx spikes (bot scanners, CORS errors, bad paths).
+    // 7-day retention matches Lambda log retention — no PII in access logs.
+    const accessLogGroup = new logs.LogGroup(this, 'ApiAccessLogs', {
+      logGroupName: '/aws/apigateway/ClewDirective-Access',
+      retention: logs.RetentionDays.ONE_WEEK,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    // IAM role granting API Gateway permission to write to CloudWatch Logs.
+    // This is a one-time account-level requirement but scoped here per-API.
+    const apiGatewayLoggingRole = new iam.Role(this, 'ApiGatewayLoggingRole', {
+      assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName(
+          'service-role/AmazonAPIGatewayPushToCloudWatchLogs'
+        ),
+      ],
+    });
+
+    // Register the logging role with the API Gateway account settings
+    const cfnAccount = new apigateway.CfnAccount(this, 'ApiGatewayAccount', {
+      cloudWatchRoleArn: apiGatewayLoggingRole.roleArn,
+    });
+
+    // API Gateway with rate limiting, CORS, and access logging
     const api = new apigateway.RestApi(this, 'ClewDirectiveApi', {
       restApiName: 'Clew Directive API',
       description: 'REST API for Clew Directive AI learning navigator',
@@ -132,6 +158,21 @@ export class ApiStack extends cdk.Stack {
         throttlingRateLimit: 10,    // 10 req/sec
         throttlingBurstLimit: 20,   // Burst to 20
         stageName: 'prod',
+        // Access logging: one JSON line per request with status, path, IP, latency
+        accessLogDestination: new apigateway.LogGroupLogDestination(accessLogGroup),
+        accessLogFormat: apigateway.AccessLogFormat.custom(
+          JSON.stringify({
+            requestId:      '$context.requestId',
+            ip:             '$context.identity.sourceIp',
+            method:         '$context.httpMethod',
+            path:           '$context.path',
+            status:         '$context.status',
+            responseLength: '$context.responseLength',
+            latencyMs:      '$context.responseLatency',
+            userAgent:      '$context.identity.userAgent',
+            errorMessage:   '$context.error.message',
+          })
+        ),
       },
       defaultCorsPreflightOptions: {
         allowOrigins: allowedOrigins,
@@ -139,6 +180,9 @@ export class ApiStack extends cdk.Stack {
         allowHeaders: ['Content-Type'],
       },
     });
+
+    // Ensure the account CfnAccount resource is created before the API stage
+    api.node.addDependency(cfnAccount);
 
     // POST /vibe-check — Process Vibe Check responses
     const vibeCheckResource = api.root.addResource('vibe-check');
