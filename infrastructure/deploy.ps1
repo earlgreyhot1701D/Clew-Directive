@@ -36,6 +36,15 @@ Write-Host "✅ AWS Account: $accountId" -ForegroundColor Green
 Write-Host "✅ Region: $region" -ForegroundColor Green
 Write-Host ""
 
+# Alarm notification email (required by MonitoringStack, never hardcoded in source)
+if (-not $env:ALARM_EMAIL) {
+    Write-Host "❌ ALARM_EMAIL is not set. Set it before deploying the Monitoring stack." -ForegroundColor Red
+    Write-Host "   Example: `$env:ALARM_EMAIL = 'you@example.com'" -ForegroundColor White
+    exit 1
+}
+Write-Host "✅ Alarm email configured" -ForegroundColor Green
+Write-Host ""
+
 # Build TypeScript
 Write-Host "🔨 Building TypeScript..." -ForegroundColor Yellow
 npm run build

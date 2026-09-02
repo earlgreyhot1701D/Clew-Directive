@@ -24,6 +24,18 @@ const env = {
   region: process.env.CDK_DEFAULT_REGION || 'us-east-1',
 };
 
+// Alarm notification email is supplied at deploy time, never hardcoded in source.
+// Priority: ALARM_EMAIL env var, then CDK context (`-c alarmEmail=...`).
+const alarmEmail =
+  process.env.ALARM_EMAIL || (app.node.tryGetContext('alarmEmail') as string | undefined);
+
+if (!alarmEmail) {
+  throw new Error(
+    'Alarm notification email is required. Set the ALARM_EMAIL environment variable ' +
+      'or pass it via CDK context: cdk deploy -c alarmEmail=you@example.com'
+  );
+}
+
 const storage = new StorageStack(app, 'ClewDirective-Storage', { env });
 
 const apiStack = new ApiStack(app, 'ClewDirective-Api', {
@@ -48,4 +60,5 @@ new MonitoringStack(app, 'ClewDirective-Monitoring', {
   generateBriefingFunctionName: apiStack.generateBriefingFunctionName,
   curatorFunctionName: curatorStack.curatorFunction.functionName,
   apiGatewayName: apiStack.apiGatewayName,
+  alarmEmail,
 });

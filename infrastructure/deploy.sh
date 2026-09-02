@@ -25,6 +25,15 @@ echo "✅ AWS Account: $ACCOUNT_ID"
 echo "✅ Region: $REGION"
 echo ""
 
+# Alarm notification email (required by MonitoringStack, never hardcoded in source)
+if [ -z "$ALARM_EMAIL" ]; then
+    echo "❌ ALARM_EMAIL is not set. Set it before deploying the Monitoring stack."
+    echo "   Example: export ALARM_EMAIL='you@example.com'"
+    exit 1
+fi
+echo "✅ Alarm email configured"
+echo ""
+
 # Build TypeScript
 echo "🔨 Building TypeScript..."
 npm run build

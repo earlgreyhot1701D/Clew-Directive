@@ -13,6 +13,8 @@ interface MonitoringStackProps extends cdk.StackProps {
   generateBriefingFunctionName: string;
   curatorFunctionName: string;
   apiGatewayName: string;
+  /** Email address that receives alarm notifications. Supplied at deploy time; not hardcoded. */
+  alarmEmail: string;
 }
 
 /**
@@ -38,9 +40,9 @@ export class MonitoringStack extends cdk.Stack {
       topicName: 'ClewDirective-Alarms',
     });
 
-    // Email subscription
+    // Email subscription (address supplied via deploy-time config, not hardcoded)
     alarmTopic.addSubscription(
-      new sns_subscriptions.EmailSubscription('cordero.lsj@gmail.com')
+      new sns_subscriptions.EmailSubscription(props.alarmEmail)
     );
 
     // Import Lambda functions by name
@@ -206,7 +208,11 @@ export class MonitoringStack extends cdk.Stack {
     // ============================================
     const apiGateway4xxAlarm = new cloudwatch.Alarm(this, 'ApiGateway4xxAlarm', {
       alarmName: 'ClewDirective-ApiGateway4xx',
-      alarmDescription: 'Alert when API Gateway has >50 4xx errors in 5 minutes (raised from 20 — bot scanner noise at 37 on 2026-05-09)',
+      // History: 20 (initial) -> 50 (2026-05-09, bot scanner noise at 37) ->
+      // 100 + 2-period sustain (2026-09-01). Observed scanner spikes peaked at 79
+      // as isolated single 5-min bursts (Aug 20-Sep 1). Requiring 2 consecutive
+      // breaching periods filters transient bot noise; only a sustained surge pages.
+      alarmDescription: 'Alert when API Gateway has >100 4xx errors sustained across two consecutive 5-minute periods (raised from 50 — single-datapoint bot scanner spikes peaked at 79 on 2026-09-01)',
       metric: new cloudwatch.Metric({
         namespace: 'AWS/ApiGateway',
         metricName: '4XXError',
@@ -216,8 +222,9 @@ export class MonitoringStack extends cdk.Stack {
         statistic: 'Sum',
         period: cdk.Duration.minutes(5),
       }),
-      threshold: 50,
-      evaluationPeriods: 1,
+      threshold: 100,
+      evaluationPeriods: 2,
+      datapointsToAlarm: 2,
       comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
       treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
     });
@@ -453,7 +460,7 @@ export class MonitoringStack extends cdk.Stack {
     });
 
     new cdk.CfnOutput(this, 'EmailSubscription', {
-      value: 'cordero.lsj@gmail.com',
+      value: props.alarmEmail,
       description: 'Email address for alarm notifications (check inbox for confirmation)',
     });
   }

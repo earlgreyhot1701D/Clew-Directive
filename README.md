@@ -460,6 +460,10 @@ Clew Directive uses **AWS CDK** (TypeScript) for infrastructure-as-code deployme
 - AWS CLI installed and configured (`aws configure`)
 - Node.js 20+ and Python 3.12+
 - AWS CDK CLI: `npm install -g aws-cdk`
+- An alarm notification email for the MonitoringStack. It is required at deploy
+  time and never hardcoded — supply it via the `ALARM_EMAIL` environment
+  variable or CDK context (`-c alarmEmail=you@example.com`). Deployment fails
+  fast if neither is provided.
 
 ### Lambda Deployment Package
 
@@ -490,9 +494,14 @@ cd infrastructure
 cdk bootstrap
 
 # Build and deploy all stacks
+# Alarm email is required by the MonitoringStack — set it via env var or context.
 npm run build
-cdk deploy --all
+ALARM_EMAIL=you@example.com cdk deploy --all
+# ...or: cdk deploy --all -c alarmEmail=you@example.com
 ```
+
+After the first deploy, AWS sends a subscription confirmation to `ALARM_EMAIL`.
+Confirm it so alarm notifications are delivered.
 
 **Deployed Stacks**:
 1. **ClewDirective-Storage**: S3 bucket for directory.json and PDFs
@@ -574,12 +583,13 @@ Both Nova models are instantly available in all AWS accounts. No approval proces
 
 **CloudWatch Dashboard**: View real-time metrics at `ClewDirective-Monitoring` dashboard
 
-**Alarms** (email notifications via SNS):
+**Alarms** (email notifications via SNS to the address supplied at deploy time
+through `ALARM_EMAIL` / `-c alarmEmail=...`):
 1. **High Traffic**: >200 briefings/day
 2. **Lambda Errors**: >5 errors in 5 minutes (per function)
 3. **Curator Resource Failure Rate**: >10% of resources fail freshness check (weekly)
 4. **API Gateway 5xx**: >5 server errors in 5 minutes
-5. **API Gateway 4xx**: >20 client errors in 5 minutes
+5. **API Gateway 4xx**: >100 client errors sustained across two consecutive 5-minute periods (2-of-2 datapoints; filters transient bot-scanner spikes)
 
 **Curator CloudWatch Metrics** (published weekly):
 - `ClewDirective/Curator/ResourceFailureRate` (Percent): Percentage of resources that failed verification

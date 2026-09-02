@@ -528,3 +528,146 @@ def test_format_resource_catalog_handles_missing_fields(navigator):
     # Should not crash, should include what's available
     assert "test-resource" in catalog
     assert "Test Resource" in catalog
+
+
+def test_fallback_learning_path_handles_tags_as_list(navigator):
+    """Test that fallback properly handles tags as a list (not string)."""
+    profile = "You're curious about AI and want hands-on projects."
+    
+    # Create resources with tags as lists (correct format)
+    resources_with_list_tags = [
+        {
+            "id": "hands-on-course",
+            "name": "Hands-on AI Course",
+            "provider": "Test Provider",
+            "resource_url": "https://example.com",
+            "provider_url": "https://provider.com",
+            "authority_tier": 1,
+            "difficulty": "beginner",
+            "estimated_hours": 20,
+            "format": "course",
+            "tags": ["hands-on", "practical", "projects"],  # List format
+            "description": "Practical AI course",
+        },
+        {
+            "id": "theory-course",
+            "name": "AI Theory Course",
+            "provider": "Test Provider",
+            "resource_url": "https://example.com",
+            "provider_url": "https://provider.com",
+            "authority_tier": 1,
+            "difficulty": "beginner",
+            "estimated_hours": 15,
+            "format": "course",
+            "tags": ["theory", "conceptual"],  # List format
+            "description": "Theoretical AI course",
+        }
+    ]
+    
+    path = navigator._fallback_learning_path(profile, resources_with_list_tags)
+    
+    # Should not crash and should prioritize hands-on resource
+    assert len(path["recommended_resources"]) == 2
+    
+    # The hands-on course should score higher due to tag matching
+    resource_ids = [r["resource_id"] for r in path["recommended_resources"]]
+    assert "hands-on-course" in resource_ids
+    
+    # First resource should be the hands-on one (higher score)
+    first_resource = path["recommended_resources"][0]
+    assert first_resource["resource_id"] == "hands-on-course"
+
+
+def test_fallback_learning_path_handles_empty_tags(navigator):
+    """Test that fallback handles resources with empty or missing tags."""
+    profile = "You're curious about AI."
+    
+    resources_with_various_tags = [
+        {
+            "id": "no-tags",
+            "name": "Course Without Tags",
+            "provider": "Test Provider",
+            "resource_url": "https://example.com",
+            "provider_url": "https://provider.com",
+            "authority_tier": 1,
+            "difficulty": "beginner",
+            "estimated_hours": 10,
+            "format": "course",
+            # No tags field
+            "description": "Basic course",
+        },
+        {
+            "id": "empty-tags",
+            "name": "Course With Empty Tags",
+            "provider": "Test Provider",
+            "resource_url": "https://example.com",
+            "provider_url": "https://provider.com",
+            "authority_tier": 1,
+            "difficulty": "beginner",
+            "estimated_hours": 10,
+            "format": "course",
+            "tags": [],  # Empty list
+            "description": "Another basic course",
+        },
+        {
+            "id": "with-tags",
+            "name": "Course With Tags",
+            "provider": "Test Provider",
+            "resource_url": "https://example.com",
+            "provider_url": "https://provider.com",
+            "authority_tier": 1,
+            "difficulty": "beginner",
+            "estimated_hours": 10,
+            "format": "course",
+            "tags": ["beginner", "introduction"],
+            "description": "Introductory course",
+        }
+    ]
+    
+    # Should not crash with missing or empty tags
+    path = navigator._fallback_learning_path(profile, resources_with_various_tags)
+    
+    assert len(path["recommended_resources"]) == 3
+    assert "recommended_resources" in path
+    assert "total_estimated_hours" in path
+
+
+def test_fallback_learning_path_tags_keyword_matching(navigator):
+    """Test that tags are properly used for keyword matching in fallback."""
+    profile = "You're a developer who wants to build AI applications with Python."
+    
+    resources_for_matching = [
+        {
+            "id": "python-ai-course",
+            "name": "Python AI Development",
+            "provider": "Test Provider",
+            "resource_url": "https://example.com",
+            "provider_url": "https://provider.com",
+            "authority_tier": 2,
+            "difficulty": "intermediate",
+            "estimated_hours": 25,
+            "format": "course",
+            "tags": ["python", "coding", "hands-on", "building"],
+            "description": "Learn to build AI apps",
+        },
+        {
+            "id": "theory-only-course",
+            "name": "AI Theory Overview",
+            "provider": "Test Provider",
+            "resource_url": "https://example.com",
+            "provider_url": "https://provider.com",
+            "authority_tier": 1,  # Higher authority
+            "difficulty": "beginner",
+            "estimated_hours": 15,
+            "format": "course",
+            "tags": ["theory", "conceptual", "non-technical"],
+            "description": "Theoretical overview",
+        }
+    ]
+    
+    path = navigator._fallback_learning_path(profile, resources_for_matching)
+    
+    # Python course should score higher despite lower authority tier
+    # because it matches "build" and "python" keywords from profile
+    first_resource = path["recommended_resources"][0]
+    assert first_resource["resource_id"] == "python-ai-course"
